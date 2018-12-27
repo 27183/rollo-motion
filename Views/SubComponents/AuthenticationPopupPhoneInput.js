@@ -26,7 +26,6 @@ export default class CarouselContainer extends Component {
                 </TouchableOpacity>
             </React.Fragment>
         )
-
     }
 
 }
