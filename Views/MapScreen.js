@@ -39,7 +39,6 @@ export default class MapScreen extends Component {
                     backdropOpacity={0.25}
                     onRequestClose={this.closePanel}
                     ref={c => this._panel = c}>
-
                     <AuthenticationPopup closePanel={this.closePanel} extendPanel={this.extendPanel} />
                 </SlidingUpPanel>
             </React.Fragment >

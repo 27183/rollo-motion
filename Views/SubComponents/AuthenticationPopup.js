@@ -1,8 +1,8 @@
 import React, { Component } from "react"
-import { View, Text, Button, TouchableOpacity, Animated } from "react-native"
+import { View, Text, Button, TouchableOpacity, Animated, Image, TextInput } from "react-native"
 import PhoneInput from 'react-native-phone-input'
 import CodeInput from 'react-native-confirmation-code-input';
-
+import styles from "../../styles"
 
 
 export default class AuthenticationPopup extends Component {
@@ -15,7 +15,8 @@ export default class AuthenticationPopup extends Component {
             userNameOpacity: new Animated.Value(0),
             phoneAuthZPosition: 3,
             codeAuthZPosition: 2,
-            nameZPosition: 1
+            nameZPosition: 1,
+            text: ""
         }
         this.verifyNumber = this.verifyNumber.bind(this)
         this.fadeOutPhoneAuth = this.fadeOutPhoneAuth.bind(this)
@@ -113,11 +114,30 @@ export default class AuthenticationPopup extends Component {
                         codeInputStyle={{ borderBottomWidth: 1.5 }}
                     />
                 </Animated.View>
-
-
-                <Animated.View style={{ opacity: this.state.userNameOpacity, top: 20, zIndex: this.state.nameZPosition }}>
+                <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>
                     <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Last thing! Let's make this place look a bit more like home.</Text>
-
+                    <View style={{ flex: 3 / 10, alignItems: "center" }}>
+                        <TouchableOpacity >
+                            <View>
+                                <Image style={styles.avatar} source={{ uri: "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
+                                <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../assets/add-picture.png")} />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View>
+                        <Text style={{ fontFamily: "Hiragino", fontSize: 10 }}>Name</Text>
+                        <TextInput
+                            style={{ height: 40, borderBottomColor: "black", borderBottomWidth: 1 }}
+                            placeholder="John Smith"
+                            onChangeText={(text) => this.setState({ text })}
+                            multiline={false}
+                            autoCorrect={false}
+                            enablesReturnKeyAutomatically={true}
+                        />
+                    </View>
+                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20, alignSelf: "center" }} onPress={this.props.closePanel}>
+                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "center" }}>Submit</Text>
+                    </TouchableOpacity>
                 </Animated.View>
             </View>
         )

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "expo": "^31.0.2",
+    "native-base": "^2.10.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
     "react-native-animatable": "^1.3.0",
@@ -16,7 +17,6 @@
     "react-native-navbar": "^2.1.0",
     "react-native-phone-input": "^0.2.1",
     "react-native-simple-slider": "^1.0.2",
-    "react-native-snap-carousel": "^3.7.5",
     "react-navigation": "^3.0.9",
     "rn-sliding-up-panel": "^1.3.1"
   },
