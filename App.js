@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import styles from "./styles"
 import { SafeAreaView, createDrawerNavigator, createStackNavigator, DrawerItems, Dimensions, NavigationActions, createAppContainer } from "react-navigation"
-import MapScreen from "./MapScreen"
+import MapScreen from "./Views/MapScreen"
 import CustomDrawerComponent from "./CustomDrawer"
+import { Font } from 'expo';
+const Hiragino = require("./assets/hiragino.otf")
 
-const Rollo = createDrawerNavigator({
+const Rollo = createAppContainer(createDrawerNavigator({
   MapScreen: { screen: MapScreen },
 },
   {
@@ -14,7 +16,24 @@ const Rollo = createDrawerNavigator({
     drawerWidth: 300,
     contentComponent: CustomDrawerComponent,
   },
-)
+))
 
+export default class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      fontLoaded: false
+    };
+  }
 
-export default createAppContainer(Rollo)
+  async componentDidMount() {
+    await Font.loadAsync({
+      'Hiragino': Hiragino,
+    });
+    this.setState({ fontLoaded: true })
+  }
+  render() {
+    return this.state.fontLoaded && (<Rollo />)
+  }
+}
+

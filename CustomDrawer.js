@@ -5,7 +5,9 @@ import { ScrollView, SafeAreaView, View, Text, TouchableOpacity, Image } from "r
 class CustomDrawerComponent extends Component {
     render() {
         return (
-            <ScrollView style={{ backgroundColor: "#fff" }}>
+            <ScrollView style={{ backgroundColor: "#fff" }}
+                scrollEnabled={false}
+            >
                 <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
                     <View style={{
                         alignItems: 'center',
