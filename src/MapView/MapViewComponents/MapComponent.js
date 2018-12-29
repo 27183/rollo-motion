@@ -1,9 +1,9 @@
 import React, { Component } from "react"
 import { Platform } from 'react-native';
 import { MapView, Constants, Location, Permissions } from 'expo';
-import { CustomMaps, styles } from "../index"
+import { CustomMaps, styles } from "../../index"
 
-export default class MapViewContainer extends Component {
+export default class MapComponent extends Component {
     constructor() {
         super()
         this.state = {
@@ -48,3 +48,4 @@ export default class MapViewContainer extends Component {
         );
     }
 }
+

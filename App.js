@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
-import styles from "./styles"
 import { SafeAreaView, createDrawerNavigator, createStackNavigator, DrawerItems, Dimensions, NavigationActions, createAppContainer } from "react-navigation"
-import MapScreen from "./Views/MapScreen"
-import CustomDrawerComponent from "./CustomDrawer"
+import { MapView, DrawerView, styles } from "./src"
 import { Font } from 'expo';
 const Hiragino = require("./assets/hiragino.otf")
 
 const Rollo = createAppContainer(createDrawerNavigator({
-  MapScreen: { screen: MapScreen },
+  MapView: { screen: MapView },
 },
   {
     drawerPosition: "left",
-    initialRouteName: "MapScreen",
+    initialRouteName: "MapView",
     drawerBackgroundColor: "white",
     drawerWidth: 300,
-    contentComponent: CustomDrawerComponent,
+    contentComponent: DrawerView,
   },
 ))
 

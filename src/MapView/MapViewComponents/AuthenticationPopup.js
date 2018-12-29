@@ -3,75 +3,60 @@ import { View, Text, Button, TouchableOpacity, Animated, Image, TextInput } from
 import PhoneInput from 'react-native-phone-input'
 import CodeInput from 'react-native-confirmation-code-input';
 import styles from "../../styles"
+import firebase from "../../../firebase/Fire"
 
+var functions = firebase.functions();
 
 export default class AuthenticationPopup extends Component {
     constructor() {
         super()
         this.state = {
-            pickerData: null,
+            phoneNumber: null,
             phoneAuthOpacity: new Animated.Value(1),
             verificationAuthOpacity: new Animated.Value(0),
             userNameOpacity: new Animated.Value(0),
             phoneAuthZPosition: 3,
             codeAuthZPosition: 2,
             nameZPosition: 1,
-            text: ""
+            text: "",
+            phone: ""
         }
-        this.verifyNumber = this.verifyNumber.bind(this)
-        this.fadeOutPhoneAuth = this.fadeOutPhoneAuth.bind(this)
-        this._onFinishCheckingCode1 = this._onFinishCheckingCode1.bind(this)
-        this.fadeOutCodeAuth = this.fadeOutCodeAuth.bind(this)
     }
-    verifyNumber() {
+
+    verifyNumber = async () => {
         if (this.phone.isValidNumber()) {
-            //insert twilio function here
-            this.setState({ pickerData: this.phone.getValue() })
-
+            try {
+                await functions.httpsCallable("logInWithPhoneNumber")({ phone: this.phone.getValue() })
+            } catch (err) {
+                console.error("error:", err)
+            }
+            this.setState({ phoneNumber: this.phone.getValue() })
+            this.fadeOutPhoneAuth()
         }
-        console.log("the number is valid? ", this.phone.isValidNumber())
-        console.log("the phone number:", this.phone.getValue())
-        this.fadeOutPhoneAuth()
     }
 
-    fadeOutPhoneAuth() {
-        Animated.timing(
-            this.state.phoneAuthOpacity,
-            {
-                toValue: 0,
-            },
-        ).start();
-        Animated.timing(
-            this.state.verificationAuthOpacity,
-            {
-                toValue: 1,
-            },
-        ).start();
+    verifyCode = async (code) => {
+        console.log(code)
+        try {
+            const response = await functions.httpsCallable("verifyToken")({ code: code, phone: this.state.phoneNumber })
+            console.log("response from verifyCode: ", response)
+        } catch (err) {
+            console.error(err)
+        }
+        this.fadeOutCodeAuth()
+    }
+
+
+    fadeOutPhoneAuth = () => {
+        Animated.timing(this.state.phoneAuthOpacity, { toValue: 0 }).start();
+        Animated.timing(this.state.verificationAuthOpacity, { toValue: 1, }).start();
         this.setState({ phoneAuthZPosition: 2, codeAuthZPosition: 3 })
     }
-    _onFinishCheckingCode1(valid) {
-        console.log(valid)
-        //insert code auth here
-        this.fadeOutCodeAuth()
 
-    }
-
-    fadeOutCodeAuth() {
-        Animated.timing(
-            this.state.verificationAuthOpacity,
-            {
-                toValue: 0,
-            },
-        ).start();
-        Animated.timing(
-            this.state.userNameOpacity,
-            {
-                toValue: 1,
-            },
-        ).start();
-        console.log("done")
+    fadeOutCodeAuth = () => {
+        Animated.timing(this.state.verificationAuthOpacity, { toValue: 0 }).start();
+        Animated.timing(this.state.userNameOpacity, { toValue: 1 }).start();
         this.setState({ codeAuthZPosition: 1, nameZPosition: 3 })
-
     }
 
     render() {
@@ -100,7 +85,7 @@ export default class AuthenticationPopup extends Component {
                 <Animated.View style={{ opacity: this.state.verificationAuthOpacity, position: "absolute", top: 20, zIndex: this.state.codeAuthZPosition }}>
                     <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Enter the verification code</Text>
                     <CodeInput
-                        codeLength={4}
+                        codeLength={6}
                         ref={c => this.codeInput = c}
                         keyboardType="numeric"
                         activeColor="#33aadc"
@@ -109,7 +94,7 @@ export default class AuthenticationPopup extends Component {
                         ignoreCase={true}
                         inputPosition='center'
                         size={50}
-                        onFulfill={(isValid) => this._onFinishCheckingCode1(isValid)}
+                        onFulfill={(isValid) => this.verifyCode(isValid)}
                         containerStyle={{ paddingTop: 20, paddingBottom: 20 }}
                         codeInputStyle={{ borderBottomWidth: 1.5 }}
                     />
@@ -120,7 +105,7 @@ export default class AuthenticationPopup extends Component {
                         <TouchableOpacity >
                             <View>
                                 <Image style={styles.avatar} source={{ uri: "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
-                                <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../assets/add-picture.png")} />
+                                <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../../assets/add-picture.png")} />
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -135,7 +120,7 @@ export default class AuthenticationPopup extends Component {
                             enablesReturnKeyAutomatically={true}
                         />
                     </View>
-                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20, alignSelf: "center" }} onPress={this.props.closePanel}>
+                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20, alignSelf: "center" }} onPress={() => console.log(firebase.auth().currentUser)}>
                         <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "center" }}>Submit</Text>
                     </TouchableOpacity>
                 </Animated.View>
@@ -143,18 +128,3 @@ export default class AuthenticationPopup extends Component {
         )
     }
 }
-
-//carousel needs to have four items
-//one is phone number input
-//two is verification code input
-//three is name input
-//four is welcome screen, ten free rides
-
-
-
-
-//next onpress
-//verify number is valid
-//if valid send text message w verification code
-//animate out input field, animate in six digit input field
-//if not valid notify user
