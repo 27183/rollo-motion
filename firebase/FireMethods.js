@@ -1,10 +1,12 @@
-import firebase from "./Fire"
-const database = firebase.database()
+import { firestore } from "./Fire"
+// const database = api.database()
 
 
-const updateUserName = (userId, name, email, imageUrl) => {
-    return firestore.collection("users").doc(userId).set(name)
+const updateUserInfo = (userId, name, email) => {
+    return firestore.collection("users").doc(userId).update({ name, email })
 }
+
+export { updateUserInfo }
 
 //update user name
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SafeAreaView, createDrawerNavigator, createStackNavigator, DrawerItems, Dimensions, NavigationActions, createAppContainer } from "react-navigation"
+import { createDrawerNavigator, createStackNavigator, DrawerItems, Dimensions, NavigationActions, createAppContainer } from "react-navigation"
 import { MapView, DrawerView, styles } from "./src"
 import { Font } from 'expo';
 const Hiragino = require("./assets/hiragino.otf")
@@ -16,11 +16,11 @@ const Rollo = createAppContainer(createDrawerNavigator({
   },
 ))
 
-export default class App extends React.Component {
+export default class App extends Component {
   constructor() {
     super();
     this.state = {
-      fontLoaded: false
+      fontLoaded: false,
     };
   }
 
@@ -29,6 +29,7 @@ export default class App extends React.Component {
       'Hiragino': Hiragino,
     });
     this.setState({ fontLoaded: true })
+
   }
   render() {
     return this.state.fontLoaded && (<Rollo />)

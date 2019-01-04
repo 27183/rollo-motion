@@ -1,8 +1,33 @@
 import React, { Component } from "react"
 import styles from "../styles"
 import { ScrollView, SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native"
+import { auth } from "../../firebase/Fire"
 
 export default class DrawerView extends Component {
+    constructor() {
+        super()
+        this.state = {
+            userName: null,
+            exists: false,
+            photo: null
+        }
+    }
+    componentDidMount() {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                this.setState({ userName: user.displayName, exists: true, photo: user.photoURL })
+                console.log("we have a user!", user)
+            } else {
+                this.setState({ exists: false })
+
+                console.log("no user yet")
+            }
+        })
+    }
+    logOut = () => {
+        auth.signOut()
+        this.props.navigation.closeDrawer()
+    }
     render() {
         return (
             <ScrollView style={{ backgroundColor: "#fff" }}
@@ -16,7 +41,7 @@ export default class DrawerView extends Component {
                     }}>
                         <Text style={{
                             fontSize: 30
-                        }}>Profile</Text></View>
+                        }}>Hey {this.state.exists ? this.state.userName : "there"}</Text></View>
                     <View style={{ flex: 3 / 10, alignItems: "center" }}>
                         <TouchableOpacity >
                             <Image style={styles.avatar} source={{ uri: "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
@@ -47,7 +72,7 @@ export default class DrawerView extends Component {
                                 <Text style={{ fontSize: 20 }}>Settings</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.closeDrawer()} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
+                        <TouchableOpacity onPress={this.logOut} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
                             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                 <Image style={{ width: 25, height: 25 }} source={require("../../assets/logout.png")} />
                                 <Text style={{ fontSize: 20 }}>Log Out</Text>

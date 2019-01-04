@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { Platform, Animated, StyleSheet, Text, View, Image, Button, TouchableOpacity, Dimensions, Icon } from 'react-native';
-import { styles } from "../../index"
+import styles from "../../styles"
 
 
 export default RideButtonContainer = (props) => {

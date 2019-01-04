@@ -1,7 +1,9 @@
 import React, { Component } from "react"
 import { Platform } from 'react-native';
 import { MapView, Constants, Location, Permissions } from 'expo';
-import { CustomMaps, styles } from "../../index"
+import styles from "../../styles"
+import { CustomMaps } from "../../index"
+import { auth } from "../../../firebase/Fire"
 
 export default class MapComponent extends Component {
     constructor() {
@@ -19,6 +21,9 @@ export default class MapComponent extends Component {
             this._getLocationAsync();
         }
     }
+    componentDidMount() {
+
+    }
     _getLocationAsync = async () => {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
         if (status !== 'granted') {
@@ -27,7 +32,7 @@ export default class MapComponent extends Component {
             });
         }
         let location = await Location.getCurrentPositionAsync({});
-        console.log(location)
+        // console.log(location)
         this.setState({ location });
     };
     render() {
