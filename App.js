@@ -10,7 +10,7 @@ const Rollo = createAppContainer(createDrawerNavigator({
   {
     drawerPosition: "left",
     initialRouteName: "MapView",
-    drawerBackgroundColor: "white",
+    drawerBackgroundColor: "transparent",
     drawerWidth: 300,
     contentComponent: DrawerView,
   },

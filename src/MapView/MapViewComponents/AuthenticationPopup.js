@@ -5,6 +5,8 @@ import CodeInput from 'react-native-confirmation-code-input';
 import styles from "../../styles"
 import { firestore, functions, auth, storage } from "../../../firebase/Fire"
 import { ImagePicker, Permissions } from 'expo';
+import uuid from 'uuid';
+
 
 export default class AuthenticationPopup extends Component {
     constructor() {
@@ -21,7 +23,8 @@ export default class AuthenticationPopup extends Component {
             phone: "",
             userId: "",
             token: "",
-            image: null
+            image: null,
+            uploading: false
         }
     }
     componentDidMount() {
@@ -54,11 +57,12 @@ export default class AuthenticationPopup extends Component {
         }
     }
 
-    signUserIn = async (token, name, email, phone) => {
+    signUserIn = async (token, name, phone) => {
         try {
             console.log("userInputtedName:", this.state.text)
-            await functions.httpsCallable("updateUserInfo")({ name: name, email: "@", phone: phone })
-            this.uploadImage(this.state.image);
+            await functions.httpsCallable("updateUserInfo")({ displayName: name, phone: phone, photoURL: this.state.image })
+
+            //upload image function
             this.props.closePanel()
             await auth.signInWithCustomToken(token)
         } catch (err) {
@@ -66,22 +70,69 @@ export default class AuthenticationPopup extends Component {
         }
     }
 
-    pickImage = async () => {
-        let { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        let result = await ImagePicker.launchImageLibraryAsync({
+
+
+    _pickImage = async () => {
+        await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        let pickerResult = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [4, 3],
         });
-        if (!result.cancelled) {
-            this.setState({ image: result.uri });
+
+        this._handleImagePicked(pickerResult);
+    };
+
+    _handleImagePicked = async pickerResult => {
+        try {
+            this.setState({ uploading: true });
+
+            if (!pickerResult.cancelled) {
+                uploadUrl = await this.uploadImageAsync(pickerResult.uri);
+                this.setState({ image: uploadUrl });
+
+            }
+        } catch (e) {
+            console.log(e);
+            alert('Upload failed, sorry :(');
+        } finally {
+            this.setState({ uploading: false });
         }
+    };
+
+
+    uploadImageAsync = async (uri) => {
+        // Why are we using XMLHttpRequest? See:
+        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function (e) {
+                console.log(e);
+                reject(new TypeError('Network request failed'));
+            };
+            xhr.responseType = 'blob';
+            xhr.open('GET', uri, true);
+            xhr.send(null);
+        });
+
+        const ref = storage
+            .ref()
+            .child(uuid.v4());
+        const snapshot = await ref.put(blob);
+
+        // We're done with the blob, close and release it
+        blob.close();
+
+        return await snapshot.ref.getDownloadURL();
     }
-    uploadImage = async (uri) => {
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        var ref = storage.ref().child(this.state.phoneNumber);
-        return ref.put(blob);
-    }
+
+
+
+
+
+
 
 
 
@@ -140,7 +191,7 @@ export default class AuthenticationPopup extends Component {
                 <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>
                     <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Last thing! Let's make this place look a bit more like home.</Text>
                     <View style={{ flex: 3 / 10, alignItems: "center" }}>
-                        <TouchableOpacity onPress={this.pickImage}>
+                        <TouchableOpacity onPress={this._pickImage}>
                             <View>
                                 <Image style={styles.avatar} source={{ uri: this.state.image || "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
                                 <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../../assets/add-picture.png")} />
@@ -161,7 +212,7 @@ export default class AuthenticationPopup extends Component {
                             enablesReturnKeyAutomatically={true}
                         />
                     </View>
-                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20, alignSelf: "center" }} onPress={() => this.signUserIn(this.state.token, this.state.text, "@", this.state.phoneNumber)}>
+                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20, alignSelf: "center" }} onPress={() => this.signUserIn(this.state.token, this.state.text, this.state.phoneNumber)}>
                         <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "center" }}>Submit</Text>
                     </TouchableOpacity>
                 </Animated.View>

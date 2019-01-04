@@ -111,10 +111,13 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
 
 
 exports.updateUserInfo = functions.https.onRequest((req, res) => {
-    const { name, email, phone } = req.body.data;
+    const { displayName, phone, photoURL } = req.body.data;
     const sendError = error => {
         res.status(422).send({ error: error.message });
     }
+
+
+
 
     admin
         .auth()
@@ -123,8 +126,8 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
             admin
                 .auth()
                 .updateUser(userRecord.uid, {
-                    displayName: name,
-                    // photoURL: `gs://rollo-motion-658bb.appspot.com/${phone}`
+                    displayName: displayName,
+                    photoURL: photoURL || "",
                 })
         })
     admin
@@ -135,7 +138,7 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
                 .firestore()
                 .collection('users')
                 .doc(userRecord.uid)
-                .update({ name, email })
+                .update({ displayName, photoURL })
                 .then(() => res.send({ success: true, data: "updated" }))
                 .catch(sendError);
         })

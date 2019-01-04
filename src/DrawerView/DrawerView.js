@@ -30,21 +30,22 @@ export default class DrawerView extends Component {
     }
     render() {
         return (
-            <ScrollView style={{ backgroundColor: "#fff" }}
+            <ScrollView style={{ backgroundColor: "#fff", borderTopRightRadius: 30, borderBottomRightRadius: 30 }}
                 scrollEnabled={false}
             >
                 <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
                     <View style={{
                         alignItems: 'center',
                         justifyContent: 'center',
-                        paddingBottom: 10
+                        paddingBottom: 10,
+                        paddingTop: 30
                     }}>
                         <Text style={{
                             fontSize: 30
-                        }}>Hey {this.state.exists ? this.state.userName : "there"}</Text></View>
+                        }}>{this.state.exists ? "Hey " + this.state.userName : ""}</Text></View>
                     <View style={{ flex: 3 / 10, alignItems: "center" }}>
                         <TouchableOpacity >
-                            <Image style={styles.avatar} source={{ uri: "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
+                            <Image style={styles.avatar} source={{ uri: this.state.exists ? this.state.photo : "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" }} />
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 7 / 10, paddingLeft: 20 }}>
