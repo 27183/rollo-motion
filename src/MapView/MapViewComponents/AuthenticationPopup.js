@@ -199,9 +199,9 @@ export default class AuthenticationPopup extends Component {
                         </TouchableOpacity>
                     </View>
                     <View>
-                        <Text style={{ fontFamily: "Hiragino", fontSize: 30 }}>Name</Text>
+                        <Text style={{ fontFamily: "Hiragino", fontSize: 20 }}>Name</Text>
                         <TextInput
-                            style={{ height: 40, borderBottomColor: "black", borderBottomWidth: 1, fontSize: 20, fontFamily: "Hiragino" }}
+                            style={{ height: 35, borderBottomColor: "black", borderBottomWidth: 1, fontSize: 15, fontFamily: "Hiragino" }}
                             placeholder="John Smith"
                             onChangeText={(text) => {
                                 this.setState({ text })
