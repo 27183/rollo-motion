@@ -137,14 +137,14 @@ export default class AuthenticationPopup extends Component {
 
 
     fadeOutPhoneAuth = () => {
-        Animated.timing(this.state.phoneAuthOpacity, { toValue: 0 }).start();
-        Animated.timing(this.state.verificationAuthOpacity, { toValue: 1, }).start();
+        Animated.timing(this.state.phoneAuthOpacity, { toValue: 0, useNativeDriver: true, }).start();
+        Animated.timing(this.state.verificationAuthOpacity, { toValue: 1, useNativeDriver: true, }).start();
         this.setState({ phoneAuthZPosition: 2, codeAuthZPosition: 3 })
     }
 
     fadeOutCodeAuth = () => {
-        Animated.timing(this.state.verificationAuthOpacity, { toValue: 0 }).start();
-        Animated.timing(this.state.userNameOpacity, { toValue: 1 }).start();
+        Animated.timing(this.state.verificationAuthOpacity, { toValue: 0, useNativeDriver: true, }).start();
+        Animated.timing(this.state.userNameOpacity, { toValue: 1, useNativeDriver: true, }).start();
         this.setState({ codeAuthZPosition: 1, nameZPosition: 3 })
     }
 
@@ -166,9 +166,9 @@ export default class AuthenticationPopup extends Component {
                     <PhoneInput ref={(ref) => { this.phone = ref }} style={{
                         paddingTop: 20, paddingBottom: 20, borderBottomWidth: 3,
                         borderBottomColor: "black",
-                    }} textStyle={{ fontSize: 25 }} textProps={{ onFocus: () => this.props.extendPanel() }} />
-                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20 }} onPress={this.verifyNumber}>
-                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "center" }}>Verify</Text>
+                    }} textStyle={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }} textProps={{ onFocus: () => this.props.extendPanel() }} />
+                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20 }} onPress={this.verifyNumber}>
+                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>Verify</Text>
                     </TouchableOpacity>
                 </Animated.View>
                 <Animated.View style={{ opacity: this.state.verificationAuthOpacity, position: "absolute", top: 20, zIndex: this.state.codeAuthZPosition }}>
@@ -177,7 +177,7 @@ export default class AuthenticationPopup extends Component {
                         codeLength={6}
                         ref={c => this.codeInput = c}
                         keyboardType="numeric"
-                        activeColor="#33aadc"
+                        activeColor="black"
                         inactiveColor="#33aadc"
                         autoFocus={false}
                         ignoreCase={true}
@@ -185,7 +185,7 @@ export default class AuthenticationPopup extends Component {
                         size={50}
                         onFulfill={(isValid) => this.verifyCode(isValid)}
                         containerStyle={{ paddingTop: 20, paddingBottom: 20 }}
-                        codeInputStyle={{ borderBottomWidth: 1.5 }}
+                        codeInputStyle={{ borderBottomWidth: 1.5, fontFamily: "Hiragino" }}
                     />
                 </Animated.View>
                 <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>
@@ -199,9 +199,9 @@ export default class AuthenticationPopup extends Component {
                         </TouchableOpacity>
                     </View>
                     <View>
-                        <Text style={{ fontFamily: "Hiragino", fontSize: 10 }}>Name</Text>
+                        <Text style={{ fontFamily: "Hiragino", fontSize: 30 }}>Name</Text>
                         <TextInput
-                            style={{ height: 40, borderBottomColor: "black", borderBottomWidth: 1 }}
+                            style={{ height: 40, borderBottomColor: "black", borderBottomWidth: 1, fontSize: 20, fontFamily: "Hiragino" }}
                             placeholder="John Smith"
                             onChangeText={(text) => {
                                 this.setState({ text })
@@ -210,10 +210,12 @@ export default class AuthenticationPopup extends Component {
                             multiline={false}
                             autoCorrect={false}
                             enablesReturnKeyAutomatically={true}
+                            autoCapitalize={"words"}
+                            returnKeyType={"done"}
                         />
                     </View>
-                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "center", top: 20, alignSelf: "center" }} onPress={() => this.signUserIn(this.state.token, this.state.text, this.state.phoneNumber)}>
-                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "center" }}>Submit</Text>
+                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20, alignSelf: "center" }} onPress={() => this.signUserIn(this.state.token, this.state.text, this.state.phoneNumber)}>
+                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>Submit</Text>
                     </TouchableOpacity>
                 </Animated.View>
             </View>

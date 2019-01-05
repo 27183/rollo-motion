@@ -35,7 +35,13 @@ const styles = StyleSheet.create({
         width: Dimensions.get("window").width,
         justifyContent: "center",
         alignItems: "center",
-        height: 100
+        height: 100,
+        width: 100,
+        alignSelf: "center",
+        backgroundColor: "black",
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.2)',
+        borderRadius: 100,
     }
 });
 
