@@ -13,6 +13,7 @@ export default class AuthenticationPopup extends Component {
         super()
         this.state = {
             phoneNumber: null,
+            validNumber: false,
             phoneAuthOpacity: new Animated.Value(1),
             verificationAuthOpacity: new Animated.Value(0),
             userNameOpacity: new Animated.Value(0),
@@ -24,7 +25,8 @@ export default class AuthenticationPopup extends Component {
             userId: "",
             token: "",
             image: null,
-            uploading: false
+            uploading: false,
+            photoPickEnabled: false
         }
     }
     componentDidMount() {
@@ -35,6 +37,7 @@ export default class AuthenticationPopup extends Component {
     verifyNumber = async () => {
         const enteredNumber = this.phone.getValue()
         if (this.phone.isValidNumber()) {
+            this.setState({ validNumber: true })
             try {
                 await functions.httpsCallable("logInWithPhoneNumber")({ phone: enteredNumber })
                 this.fadeOutPhoneAuth()
@@ -145,7 +148,7 @@ export default class AuthenticationPopup extends Component {
     fadeOutCodeAuth = () => {
         Animated.timing(this.state.verificationAuthOpacity, { toValue: 0, useNativeDriver: true, }).start();
         Animated.timing(this.state.userNameOpacity, { toValue: 1, useNativeDriver: true, }).start();
-        this.setState({ codeAuthZPosition: 1, nameZPosition: 3 })
+        this.setState({ codeAuthZPosition: 1, nameZPosition: 3, photoPickEnabled: true })
     }
 
     render() {
@@ -167,7 +170,7 @@ export default class AuthenticationPopup extends Component {
                         paddingTop: 20, paddingBottom: 20, borderBottomWidth: 3,
                         borderBottomColor: "black",
                     }} textStyle={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }} textProps={{ onFocus: () => this.props.extendPanel() }} />
-                    <TouchableOpacity style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20 }} onPress={this.verifyNumber}>
+                    <TouchableOpacity disabled={this.state.validNumber} style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20 }} onPress={this.verifyNumber}>
                         <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>Verify</Text>
                     </TouchableOpacity>
                 </Animated.View>
@@ -191,7 +194,7 @@ export default class AuthenticationPopup extends Component {
                 <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>
                     <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Last thing! Let's make this place look a bit more like home.</Text>
                     <View style={{ flex: 3 / 10, alignItems: "center" }}>
-                        <TouchableOpacity onPress={this._pickImage}>
+                        <TouchableOpacity disabled={this.state.photoPickEnabled} onPress={this._pickImage}>
                             <View>
                                 <Image style={styles.avatar} source={{ uri: this.state.image || "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
                                 <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../../assets/add-picture.png")} />
