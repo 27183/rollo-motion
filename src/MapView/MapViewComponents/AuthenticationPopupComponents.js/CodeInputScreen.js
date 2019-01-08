@@ -1,0 +1,32 @@
+import React, { Component } from "react"
+import { Text, Image } from "react-native"
+import CodeInput from 'react-native-confirmation-code-input';
+
+export default class CodeInputScreen extends Component {
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        return (
+            this.props.verifyingCode ?
+                <Image style={{ width: 100, height: 100, top: 60 }} source={require("../../../../assets/loading.gif")} />
+                : <React.Fragment>
+                    <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Enter the verification code</Text>
+                    <CodeInput
+                        codeLength={6}
+                        ref={c => this.codeInput = c}
+                        keyboardType="numeric"
+                        activeColor="black"
+                        inactiveColor="#33aadc"
+                        autoFocus={false}
+                        ignoreCase={true}
+                        inputPosition='center'
+                        size={50}
+                        onFulfill={(isValid) => this.props.verifyCode(isValid)}
+                        containerStyle={{ paddingTop: 20, paddingBottom: 20 }}
+                        codeInputStyle={{ borderBottomWidth: 1.5, fontFamily: "Hiragino" }}
+                    />
+                </React.Fragment>
+        )
+    }
+}

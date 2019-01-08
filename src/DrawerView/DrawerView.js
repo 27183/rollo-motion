@@ -31,8 +31,7 @@ export default class DrawerView extends Component {
     render() {
         return (
             <ScrollView style={{ backgroundColor: "#fff", borderTopRightRadius: 30, borderBottomRightRadius: 30 }}
-                scrollEnabled={false}
-            >
+                scrollEnabled={false}>
                 <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
                     <View style={{
                         alignItems: 'center',

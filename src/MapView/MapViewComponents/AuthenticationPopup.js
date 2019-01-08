@@ -1,12 +1,9 @@
 import React, { Component } from "react"
-import { View, Text, Button, TouchableOpacity, Animated, Image, TextInput, ActivityIndicator } from "react-native"
-import PhoneInput from 'react-native-phone-input'
-import CodeInput from 'react-native-confirmation-code-input';
-import styles from "../../styles"
-import { firestore, functions, auth, storage } from "../../../firebase/Fire"
+import { View, Animated } from "react-native"
+import { functions, auth, storage } from "../../../firebase/Fire"
 import { ImagePicker, Permissions, Alert } from 'expo';
 import uuid from 'uuid';
-
+import { CodeInputScreen, PhoneInputScreen, UserInfoScreen } from "./AuthenticationPopupComponents.js"
 
 export default class AuthenticationPopup extends Component {
     constructor() {
@@ -31,13 +28,10 @@ export default class AuthenticationPopup extends Component {
             signingIn: false
         }
     }
-    componentDidMount() {
-
-    }
 
     verifyNumber = async () => {
-        const enteredNumber = this.phone.getValue()
-        if (this.phone.isValidNumber()) {
+        const enteredNumber = this.phoneInput.phone.getValue()
+        if (this.phoneInput.phone.isValidNumber()) {
             this.setState({ validNumber: true })
             try {
                 await functions.httpsCallable("logInWithPhoneNumber")({ phone: enteredNumber })
@@ -46,7 +40,7 @@ export default class AuthenticationPopup extends Component {
                 console.error("here's the big error:", error)
             }
             this.setState({ phoneNumber: enteredNumber })
-            this.codeInput._setFocus(0)
+            this.codeInput.codeInput._setFocus(0)
         } else {
             console.log("not a valid number!")
         }
@@ -57,14 +51,11 @@ export default class AuthenticationPopup extends Component {
         try {
             console.log("trying to do it!")
             const { data } = await functions.httpsCallable("verifyToken")({ code: code, phone: this.state.phoneNumber })
-            // console.log("payload", payload)
             console.log("here's the status", data.stat)
             this.setState({ token: data.id })
             if (data.stat !== "new user") {
                 await auth.signInWithCustomToken(data.id)
-                // this.fadeOutCodeAuth()
                 this.props.closePanel()
-                //sign user in
             }
             this.fadeOutCodeAuth()
         } catch (err) {
@@ -146,6 +137,11 @@ export default class AuthenticationPopup extends Component {
         this.setState({ codeAuthZPosition: 1, nameZPosition: 3, photoPickDisabled: false })
     }
 
+    updateName = (text) => {
+        this.setState({ text })
+        console.log(this.state.text)
+    }
+
     render() {
         return (
             <View style={
@@ -160,74 +156,15 @@ export default class AuthenticationPopup extends Component {
                 }
             }>
                 <Animated.View style={{ opacity: this.state.phoneAuthOpacity, zIndex: this.state.phoneAuthZPosition }}>
-                    {this.state.validNumber ?
-                        <Image style={{ width: 100, height: 100, top: 60 }} source={require("../../../assets/loading.gif")} />
-                        : <React.Fragment>
-                            <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Ready to Rollo?</Text>
-                            <PhoneInput ref={(ref) => { this.phone = ref }}
-                                style={{
-                                    paddingTop: 20, paddingBottom: 20, borderBottomWidth: 3,
-                                    borderBottomColor: "black",
-                                }} textStyle={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }} textProps={{ placeholder: "1-800-ROLLO", onFocus: () => this.props.extendPanel() }} />
-                            <TouchableOpacity disabled={this.state.validNumber} style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20 }} onPress={this.verifyNumber}>
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>Verify</Text>
-                            </TouchableOpacity></React.Fragment>}
+                    <PhoneInputScreen validNumber={this.state.validNumber} ref={c => this.phoneInput = c} extendPanel={this.props.extendPanel} verifyNumber={this.verifyNumber} />
                 </Animated.View>
+
                 <Animated.View style={{ opacity: this.state.verificationAuthOpacity, position: "absolute", top: 20, zIndex: this.state.codeAuthZPosition }}>
-                    {this.state.verifyingCode ?
-                        <Image style={{ width: 100, height: 100, top: 60 }} source={require("../../../assets/loading.gif")} />
-                        : <React.Fragment>
-                            <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Enter the verification code</Text>
-                            <CodeInput
-                                codeLength={6}
-                                ref={c => this.codeInput = c}
-                                keyboardType="numeric"
-                                activeColor="black"
-                                inactiveColor="#33aadc"
-                                autoFocus={false}
-                                ignoreCase={true}
-                                inputPosition='center'
-                                size={50}
-                                onFulfill={(isValid) => this.verifyCode(isValid)}
-                                containerStyle={{ paddingTop: 20, paddingBottom: 20 }}
-                                codeInputStyle={{ borderBottomWidth: 1.5, fontFamily: "Hiragino" }}
-                            />
-                        </React.Fragment>}
+                    <CodeInputScreen verifyingCode={this.state.verifyingCode} ref={c => this.codeInput = c} verifyCode={this.verifyCode} />
                 </Animated.View>
+
                 <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>
-                    {this.state.signingIn ?
-                        <Image style={{ width: 100, height: 100, top: 60 }} source={require("../../../assets/loading.gif")} />
-                        :
-                        <React.Fragment>
-                            <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Last thing! Let's make this place look a bit more like home.</Text>
-                            <View style={{ flex: 3 / 10, alignItems: "center" }}>
-                                <TouchableOpacity disabled={this.state.photoPickDisabled} onPress={this._pickImage}>
-                                    <View>
-                                        <Image style={styles.avatar} source={this.state.uploading ? require("../../../assets/loading.gif") : { uri: this.state.image || "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
-                                        <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../../assets/add-picture.png")} />
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <Text style={{ fontFamily: "Hiragino", fontSize: 20 }}>Name</Text>
-                                <TextInput
-                                    style={{ height: 35, borderBottomColor: "black", borderBottomWidth: 1, fontSize: 15, fontFamily: "Hiragino" }}
-                                    placeholder="John Smith"
-                                    onChangeText={(text) => {
-                                        this.setState({ text })
-                                        console.log(this.state.text)
-                                    }}
-                                    multiline={false}
-                                    autoCorrect={false}
-                                    enablesReturnKeyAutomatically={true}
-                                    autoCapitalize={"words"}
-                                    returnKeyType={"done"}
-                                />
-                            </View>
-                            <TouchableOpacity disabled={this.state.uploading || (!this.state.text)} style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20, alignSelf: "center" }} onPress={() => this.signUserIn(this.state.token, this.state.text, this.state.phoneNumber)}>
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>Submit</Text>
-                            </TouchableOpacity>
-                        </React.Fragment>}
+                    <UserInfoScreen signedIn={this.state.signingIn} photoPickDisabled={this.state.photoPickDisabled} pickImage={this._pickImage} uploading={this.state.uploading} image={this.state.image} onChangeText={this.updateName} text={this.state.text} signUserIn={this.signUserIn} token={this.state.token} phoneNumber={this.state.phoneNumber} />
                 </Animated.View>
             </View>
         )
