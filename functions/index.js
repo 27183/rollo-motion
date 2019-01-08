@@ -68,7 +68,7 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
     // If matches, create custom auth token and then invalidate code
     const { code, phone } = req.body.data;
     const sendError = error => {
-        res.status(422).send({ error: error.message });
+        res.status(422).send({ success: false, error: error.message });
     }
 
     admin
