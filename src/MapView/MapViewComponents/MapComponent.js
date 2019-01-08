@@ -12,7 +12,7 @@ export default class MapComponent extends Component {
             location: null
         }
     }
-    componentWillMount() {
+    componentDidMount() {
         if (Platform.OS === 'android' && !Constants.isDevice) {
             this.setState({
                 errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
@@ -20,9 +20,6 @@ export default class MapComponent extends Component {
         } else {
             this._getLocationAsync();
         }
-    }
-    componentDidMount() {
-
     }
     _getLocationAsync = async () => {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);

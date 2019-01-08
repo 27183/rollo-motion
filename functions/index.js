@@ -70,6 +70,20 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
     const sendError = error => {
         res.status(422).send({ success: false, error: error.message });
     }
+    const checkIfUserExists = (id) => {
+        return admin
+            .auth()
+            .getUserByPhoneNumber(phone)
+            .then(userRecord => {
+                if (userRecord.displayName != null || userRecord.photoURL != null) {
+                    console.log("user has logged in before")
+                    return { id: id, stat: "user present" }
+                } else {
+                    console.log('new user signing in')
+                    return { id: id, stat: "new user" }
+                }
+            })
+    }
 
     admin
         .auth()
@@ -104,31 +118,36 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
             return Promise.resolve(doc.id);
         })
         .then(uid => admin.auth().createCustomToken(uid))
-        .then(token => res.status(200).send({ success: true, data: token }))
+        .then(token => checkIfUserExists(token))
+        .then(obj => res.status(200).send({ success: true, data: obj }))
         .catch(sendError);
 });
 
-
-
 exports.updateUserInfo = functions.https.onRequest((req, res) => {
     const { displayName, phone, photoURL } = req.body.data;
+    const filt = { displayName: displayName, phone: phone, photoURL: photoURL }
+    console.log(filt)
+    const removeEmpty = (obj) =>
+        Object.keys(obj)
+            .filter(k => obj[k] !== null && obj[k] !== undefined && obj[k] !== "")  // Remove undef. and null.
+            .reduce((newObj, k) =>
+                typeof obj[k] === 'object' ?
+                    Object.assign(newObj, { [k]: removeEmpty(obj[k]) }) :  // Recurse.
+                    Object.assign(newObj, { [k]: obj[k] }),  // Copy value.
+                {});
+    const updates = removeEmpty(filt)
+    console.log("updates", updates)
+
     const sendError = error => {
         res.status(422).send({ error: error.message });
     }
-
-
-
-
     admin
         .auth()
         .getUserByPhoneNumber(phone)
         .then(userRecord => {
             admin
                 .auth()
-                .updateUser(userRecord.uid, {
-                    displayName: displayName,
-                    photoURL: photoURL || "",
-                })
+                .updateUser(userRecord.uid, updates)
         })
     admin
         .auth()
