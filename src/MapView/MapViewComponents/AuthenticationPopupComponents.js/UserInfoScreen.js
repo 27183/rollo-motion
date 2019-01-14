@@ -9,16 +9,17 @@ export default class UserInfoScreen extends Component {
     }
 
     render() {
+        const { signingIn, photoPickDisabled, pickImage, uploading, image, onChangeText, signUserIn, token, text, phoneNumber } = this.props
         return (
-            this.props.signingIn ?
+            signingIn ?
                 <Image style={{ width: 100, height: 100, top: 60 }} source={loadingGif} />
                 :
                 <React.Fragment>
                     <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Last thing! Let's make this place look a bit more like home.</Text>
                     <View style={{ flex: 3 / 10, alignItems: "center" }}>
-                        <TouchableOpacity disabled={this.props.photoPickDisabled} onPress={this.props.pickImage}>
+                        <TouchableOpacity disabled={photoPickDisabled} onPress={pickImage}>
                             <View>
-                                <Image style={styles.avatar} source={this.props.uploading ? loadingGif : { uri: this.props.image || "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
+                                <Image style={styles.avatar} source={uploading ? loadingGif : { uri: image || "https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-2.png" }} />
                                 <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../../../assets/add-picture.png")} />
                             </View>
                         </TouchableOpacity>
@@ -28,7 +29,7 @@ export default class UserInfoScreen extends Component {
                         <TextInput
                             style={{ height: 35, borderBottomColor: "black", borderBottomWidth: 1, fontSize: 15, fontFamily: "Hiragino" }}
                             placeholder="John Smith"
-                            onChangeText={(text) => this.props.onChangeText(text)}
+                            onChangeText={(text) => onChangeText(text)}
                             multiline={false}
                             autoCorrect={false}
                             enablesReturnKeyAutomatically={true}
@@ -36,8 +37,8 @@ export default class UserInfoScreen extends Component {
                             returnKeyType={"done"}
                         />
                     </View>
-                    <TouchableOpacity disabled={this.props.uploading} style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20, alignSelf: "center" }} onPress={() => this.props.signUserIn(this.props.token, this.props.text, this.props.phoneNumber)}>
-                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>{this.props.text || this.props.image ? "Submit" : "Skip"}</Text>
+                    <TouchableOpacity disabled={uploading} style={{ backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 20, alignSelf: "center" }} onPress={() => signUserIn(token, text, phoneNumber)}>
+                        <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>{text || image ? "Submit" : "Skip"}</Text>
                     </TouchableOpacity>
                 </React.Fragment>
         )

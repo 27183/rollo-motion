@@ -29,6 +29,7 @@ export default class DrawerView extends Component {
         this.props.navigation.closeDrawer()
     }
     render() {
+        const { closeDrawer } = this.props.navigation
         return (
             <ScrollView style={{ backgroundColor: "#fff", borderTopRightRadius: 30, borderBottomRightRadius: 30 }}
                 scrollEnabled={false}>
@@ -48,25 +49,25 @@ export default class DrawerView extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 7 / 10, paddingLeft: 20 }}>
-                        <TouchableOpacity onPress={() => this.props.navigation.closeDrawer()} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
+                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
                             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                 <Image style={{ width: 25, height: 25 }} source={require("../../assets/map.png")} />
                                 <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Map</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.closeDrawer()} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
+                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
                             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                 <Image style={{ width: 20, height: 20 }} source={require("../../assets/rideHistory.png")} />
                                 <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Ride History</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.closeDrawer()} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
+                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
                             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                 <Image style={{ width: 25, height: 25 }} source={require("../../assets/help.png")} />
                                 <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Help</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.closeDrawer()} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
+                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
                             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                 <Image style={{ width: 25, height: 25 }} source={require("../../assets/settings.png")} />
                                 <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Settings</Text>
