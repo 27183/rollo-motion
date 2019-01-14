@@ -1,7 +1,8 @@
 import React, { Component } from "react"
 import { View, Animated } from "react-native"
+import styles from "../../styles"
 import { functions, auth, storage } from "../../../firebase/Fire"
-import { ImagePicker, Permissions, Alert } from 'expo';
+import { ImagePicker, Permissions } from 'expo';
 import uuid from 'uuid';
 import { CodeInputScreen, PhoneInputScreen, UserInfoScreen } from "./AuthenticationPopupComponents.js"
 
@@ -25,7 +26,8 @@ export default class AuthenticationPopup extends Component {
             uploading: false,
             photoPickDisabled: true,
             verifyingCode: false,
-            signingIn: false
+            signingIn: false,
+            invalidCode: false
         }
     }
 
@@ -45,6 +47,13 @@ export default class AuthenticationPopup extends Component {
             console.log("not a valid number!")
         }
     }
+    resendCode = async (phoneNumber) => {
+        try {
+            await functions.httpsCallable("logInWithPhoneNumber")({ phone: phoneNumber })
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     verifyCode = async (code) => {
         this.setState({ verifyingCode: true })
@@ -59,8 +68,10 @@ export default class AuthenticationPopup extends Component {
             }
             this.fadeOutCodeAuth()
         } catch (err) {
+            this.setState({ verifyingCode: false, invalidCode: true })
             console.log(err)
             console.log("invalid code")
+
             //add button to re-send a code
         }
     }
@@ -144,23 +155,13 @@ export default class AuthenticationPopup extends Component {
 
     render() {
         return (
-            <View style={
-                {
-                    flex: 1,
-                    backgroundColor: 'white',
-                    justifyContent: "flex-start",
-                    alignItems: 'center',
-                    borderTopLeftRadius: 25,
-                    borderTopRightRadius: 25,
-                    padding: 20
-                }
-            }>
+            <View style={styles.authenticationPopupContainer}>
                 <Animated.View style={{ opacity: this.state.phoneAuthOpacity, zIndex: this.state.phoneAuthZPosition }}>
                     <PhoneInputScreen validNumber={this.state.validNumber} ref={c => this.phoneInput = c} extendPanel={this.props.extendPanel} verifyNumber={this.verifyNumber} />
                 </Animated.View>
 
                 <Animated.View style={{ opacity: this.state.verificationAuthOpacity, position: "absolute", top: 20, zIndex: this.state.codeAuthZPosition }}>
-                    <CodeInputScreen verifyingCode={this.state.verifyingCode} ref={c => this.codeInput = c} verifyCode={this.verifyCode} />
+                    <CodeInputScreen resendCode={this.resendCode} phoneNumber={this.state.phoneNumber} verifyingCode={this.state.verifyingCode} ref={c => this.codeInput = c} verifyCode={this.verifyCode} invalidCode={this.state.invalidCode} />
                 </Animated.View>
 
                 <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>

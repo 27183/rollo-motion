@@ -1,6 +1,15 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
+    authenticationPopupContainer: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: "flex-start",
+        alignItems: 'center',
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
+        padding: 20
+    },
     loginContainer: {
         flex: 1,
         backgroundColor: '#fff',

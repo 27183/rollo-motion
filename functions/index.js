@@ -12,6 +12,7 @@ admin.initializeApp({
 
 exports.logInWithPhoneNumber = functions.https.onRequest((req, res) => {
     const { phone } = req.body.data;
+    console.log("here's the phone number", phone)
     admin
         .auth()
         .getUserByPhoneNumber(phone)

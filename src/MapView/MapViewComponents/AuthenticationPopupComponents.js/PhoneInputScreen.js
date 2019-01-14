@@ -1,6 +1,8 @@
 import React, { Component } from "react"
 import { Text, TouchableOpacity, Animated, Image } from "react-native"
 import PhoneInput from 'react-native-phone-input'
+import loadingGif from "../../../../assets/loading.gif"
+
 
 export default class PhoneInputScreen extends React.Component {
     constructor(props) {
@@ -9,7 +11,7 @@ export default class PhoneInputScreen extends React.Component {
     render() {
         return (
             this.props.validNumber ?
-                <Image style={{ width: 100, height: 100, top: 60 }} source={require("../../../../assets/loading.gif")} />
+                <Image style={{ width: 100, height: 100, top: 60 }} source={loadingGif} />
                 : <React.Fragment>
                     <Text style={{ fontSize: 30, fontFamily: "Hiragino" }}>Ready to Rollo?</Text>
                     <PhoneInput ref={(ref) => { this.phone = ref }}
