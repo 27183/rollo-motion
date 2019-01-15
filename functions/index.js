@@ -164,3 +164,8 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
         })
         .catch(sendError);
 });
+
+exports.requestRollo = functions.https.onRequest((req, res) => {
+    const { user, location } = req.body.data
+
+})
