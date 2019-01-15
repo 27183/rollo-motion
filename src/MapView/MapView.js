@@ -113,7 +113,7 @@ export default class MapView extends Component {
                         <Image style={{ width: 150, height: 150, opacity: 0.5 }} source={require('../../assets/loadingFinal.gif')} />
                     </View>
                 }
-                <TopBar navigation={this.props.navigation} />
+                <TopBar navigation={this.props.navigation} cancelRide={this.cancelRide} />
                 <RideButtonContainer openPanel={this.openPanel} user={this.state.user} requestRide={this.requestRide} confirmingRide={this.state.confirmingRide} cancelRide={this.cancelRide} />
                 <SlidingUpPanel
                     visible={this.state.visible}
