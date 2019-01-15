@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { createDrawerNavigator, createStackNavigator, DrawerItems, Dimensions, NavigationActions, createAppContainer } from "react-navigation"
-import { MapView, DrawerView, styles } from "./src"
+import { MapView, DrawerView, styles, SettingsView } from "./src"
+import { View } from "react-native"
 import { Font } from 'expo';
 const Hiragino = require("./assets/hiragino.otf")
 const HiraginoLighter = require("./assets/hiragino-lighter.otf")
 const HiraginoLightest = require("./assets/hiragino-lightest.otf")
+import Loader from './src/Loader/Loader';
 
 const Rollo = createAppContainer(createDrawerNavigator({
   MapView: { screen: MapView },
+  SettingsView: { screen: SettingsView }
 },
   {
     drawerPosition: "left",
@@ -23,6 +26,7 @@ export default class App extends Component {
     super();
     this.state = {
       fontLoaded: false,
+      appReady: false,
     };
   }
 
@@ -33,9 +37,22 @@ export default class App extends Component {
       "Hiragino-Lightest": HiraginoLightest
     });
     this.setState({ fontLoaded: true })
+    setTimeout(() => {
+      this.setState({
+        appReady: true,
+      });
+    }, 1500);
   }
   render() {
-    return this.state.fontLoaded && (<Rollo />)
+    return this.state.fontLoaded && (
+      <Loader
+        isLoaded={this.state.appReady}
+        imageSource={require('./assets/rollo_logo.png')}
+        backgroundStyle={{ backgroundColor: "#33aadc" }}
+      >
+        <Rollo />
+      </Loader>
+    )
   }
 }
 

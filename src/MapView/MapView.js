@@ -2,8 +2,9 @@ import React, { Component } from "react"
 import { TopBar, MapComponent, RideButtonContainer, AuthenticationPopup } from "./MapViewComponents"
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import { Dimensions, Easing, View, Image } from 'react-native';
-import { auth } from "../../firebase/Fire"
+import { auth, functions } from "../../firebase/Fire"
 import { Location, Permissions } from 'expo';
+
 
 export default class MapView extends Component {
     constructor(props) {
@@ -16,7 +17,8 @@ export default class MapView extends Component {
             location: null,
             region: null,
             confirmingRide: false,
-            loading: false
+            loading: false,
+            rollos: []
         }
     }
     openPanel = () => {
@@ -32,8 +34,6 @@ export default class MapView extends Component {
     requestRide = () => {
         if (this.state.confirmingRide) {
             const location = this.state.region
-            console.log('heres the users location', location)
-
             this.setState({ loading: true })
 
             //send location to cloud and notify rollos
@@ -53,7 +53,6 @@ export default class MapView extends Component {
         }
         let location = await Location.getCurrentPositionAsync({});
         this.setState({ location });
-        console.log("location:", location)
     };
     onRegionChange = region => {
         this.setState({
@@ -69,11 +68,18 @@ export default class MapView extends Component {
         this.setState({ confirmingRide: false })
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        const { data } = await functions.httpsCallable("requestRollos")({})
+        console.log("here they are :)", data)
+        this.setState({ rollos: data })
+
+        console.log("rollo objects:", this.props.rollos)
+
+
+
         auth.onAuthStateChanged(user => {
             if (user) {
                 this.setState({ user: true })
-                console.log("we have a user!")
             } else {
                 this.setState({ user: false })
                 console.log("no user yet")
@@ -83,7 +89,7 @@ export default class MapView extends Component {
     render() {
         return (
             <React.Fragment>
-                <MapComponent ref={map => this.map = map} getLocation={this._getLocationAsync} location={this.state.location} onRegionChange={this.onRegionChange} />
+                <MapComponent rollos={this.state.rollos} ref={map => this.map = map} getLocation={this._getLocationAsync} location={this.state.location} onRegionChange={this.onRegionChange} />
                 {this.state.confirmingRide &&
                     <View style={{
                         left: '50%',

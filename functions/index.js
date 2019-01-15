@@ -165,7 +165,22 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
         .catch(sendError);
 });
 
-exports.requestRollo = functions.https.onRequest((req, res) => {
-    const { user, location } = req.body.data
-
+exports.requestRollos = functions.https.onRequest((req, res) => {
+    const sendError = error => {
+        res.status(422).send(error);
+    }
+    return admin
+        .firestore()
+        .collection("rollos")
+        .where("status", "==", "active")
+        .get()
+        .then(snap => {
+            var rollosArr = []
+            snap.forEach(documentSnapshot => {
+                rollosArr.push(documentSnapshot.data())
+            })
+            return rollosArr
+        })
+        .then((rollos) => res.status(200).send({ data: rollos }))
+        .catch(sendError)
 })

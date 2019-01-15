@@ -16,7 +16,6 @@ export default class DrawerView extends Component {
         auth.onAuthStateChanged(user => {
             if (user) {
                 this.setState({ userName: user.displayName, exists: true, photo: user.photoURL || "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" })
-                console.log("we have a user!", user)
             } else {
                 this.setState({ exists: false })
 

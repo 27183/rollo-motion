@@ -14,7 +14,14 @@ export default class TopBar extends Component {
         return (
             <View style={styles.topBar}>
                 <TouchableOpacity style={{ position: "absolute", left: 20, top: 15, justifyContent: "flex-start", width: 40, height: 40 }} onPress={this.hamburgerPressed}><Image style={{ width: 30, height: 30 }} source={require("../../../assets/hamburger.png")}></Image></TouchableOpacity>
-                <Image style={{ height: 50 }} source={require('../../../assets/rollologo.png')} />
+                <View style={{ height: 50, width: 100, alignSelf: "center" }}>
+                    <Image style={{
+                        flex: 1,
+                        width: null,
+                        height: null,
+                        resizeMode: 'contain'
+                    }} source={require('../../../assets/rollologo.png')} />
+                </View>
             </View>
         )
     }
