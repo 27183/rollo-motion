@@ -4,7 +4,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 import { Dimensions, Easing, View, Image, Text } from 'react-native';
 import { auth, functions } from "../../firebase/Fire"
 import { Location, Permissions } from 'expo';
-import Dialog, { SlideAnimation, DialogContent } from 'react-native-popup-dialog';
+import Dialog, { SlideAnimation, DialogContent, DialogButton } from 'react-native-popup-dialog';
 
 
 export default class MapView extends Component {
@@ -131,15 +131,20 @@ export default class MapView extends Component {
                     dialogAnimation={new SlideAnimation({
                         slideFrom: 'bottom',
                     })}
+                    actions={[
+                        <DialogButton
+                            text="sounds good"
+                            style={{ backgroundColor: "#33aadc" }}
+                            textStyle={{ color: "#FFF", alignSelf: "center", fontFamily: "Hiragino", fontSize: 18 }}
+                            onPress={() => { this.setState({ dialogVisible: false }) }}
+                        />,
+                    ]}
                     width={0.5}
                     height={0.15}
                 >
-                    <DialogContent style={{ flex: 1, backgroundColor: "#33aadc", justifyContent: "center", alignItems: "center" }}>
-                        <View style={{ flex: 1, backgroundColor: "#33aadc", justifyContent: "center", alignItems: "center" }}>
-                            <Text style={{ color: "#FFF", alignSelf: "center", fontFamily: "Hiragino", fontSize: 15 }}>{"No rollos nearby 😢"}</Text>
-                            <Text style={{ color: "#FFF", alignSelf: "center", fontFamily: "Hiragino", fontSize: 15 }}>{"Try again later!"}</Text>
-
-                        </View>
+                    <DialogContent style={{ flex: 1, backgroundColor: "#33aadc", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
+                        <Text style={{ color: "#FFF", fontFamily: "Hiragino", fontSize: 15 }}>{"No rollos nearby 😢"}</Text>
+                        <Text style={{ color: "#FFF", fontFamily: "Hiragino", fontSize: 15 }}>{"Try again later!"}</Text>
                     </DialogContent>
                 </Dialog>
 
