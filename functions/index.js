@@ -1,13 +1,13 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 
 const config = functions.config();
-const twilio = require('twilio')(config.twilio.account, config.twilio.token);
+const twilio = require("twilio")(config.twilio.account, config.twilio.token);
 
-const serviceAccount = require('./service-account.json');
+const serviceAccount = require("./service-account.json");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://rollo-motion-658bb.firebaseio.com',
+    databaseURL: "https://rollo-motion-658bb.firebaseio.com",
 });
 
 exports.logInWithPhoneNumber = functions.https.onRequest((req, res) => {
@@ -19,7 +19,7 @@ exports.logInWithPhoneNumber = functions.https.onRequest((req, res) => {
         .then(userRecord => sendSMSVerification(res, userRecord.uid, phone))
         .catch(error => {
             switch (error.code) {
-                case 'auth/user-not-found':
+                case "auth/user-not-found":
                     return createUser();
                 default:
                     return sendError(error);
@@ -47,7 +47,7 @@ exports.logInWithPhoneNumber = functions.https.onRequest((req, res) => {
         const setUser = message => {
             admin
                 .firestore()
-                .collection('users')
+                .collection("users")
                 .doc(uid)
                 .set({ verification })
                 .then(() => res.send({ success: true, data: "created" }))
@@ -80,7 +80,7 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
                     console.log("user has logged in before")
                     return { id: id, stat: "user present" }
                 } else {
-                    console.log('new user signing in')
+                    console.log("new user signing in")
                     return { id: id, stat: "new user" }
                 }
             })
@@ -92,13 +92,13 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
         .then(userRecord => {
             return admin
                 .firestore()
-                .collection('users')
+                .collection("users")
                 .doc(userRecord.uid)
                 .get();
         })
         .then(doc => {
             if (!doc.exists) {
-                return Promise.reject(new Error('custom/uid-not-found'));
+                return Promise.reject(new Error("custom/uid-not-found"));
             }
 
             const timeNow = Date.now();
@@ -106,16 +106,16 @@ exports.verifyToken = functions.https.onRequest((req, res) => {
             let error = null;
 
             if (verification.code !== parseInt(code, 10)) {
-                error = 'custom/code-does-not-match';
+                error = "custom/code-does-not-match";
             } else if (!verification.valid) {
-                error = 'custom/code-already-used';
+                error = "custom/code-already-used";
             } else if (timeNow > verification.expiration) {
-                error = 'custom/code-expired';
+                error = "custom/code-expired";
             }
             if (error) {
                 return Promise.reject(new Error(error));
             }
-            doc.ref.update({ 'verification.valid': false });
+            doc.ref.update({ "verification.valid": false });
             return Promise.resolve(doc.id);
         })
         .then(uid => admin.auth().createCustomToken(uid))
@@ -132,7 +132,7 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
         Object.keys(obj)
             .filter(k => obj[k] !== null && obj[k] !== undefined && obj[k] !== "")  // Remove undef. and null.
             .reduce((newObj, k) =>
-                typeof obj[k] === 'object' ?
+                typeof obj[k] === "object" ?
                     Object.assign(newObj, { [k]: removeEmpty(obj[k]) }) :  // Recurse.
                     Object.assign(newObj, { [k]: obj[k] }),  // Copy value.
                 {});
@@ -156,7 +156,7 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
         .then(userRecord => {
             return admin
                 .firestore()
-                .collection('users')
+                .collection("users")
                 .doc(userRecord.uid)
                 .update({ displayName, photoURL, userId: userRecord.uid })
                 .then(() => res.send({ success: true, data: "updated" }))
@@ -185,9 +185,6 @@ exports.requestRollos = functions.https.onRequest((req, res) => {
         .then((rollos) => res.status(200).send({ data: rollos }))
         .catch(sendError)
 })
-
-
-
 
 exports.confirmRide = functions.https.onRequest((req, res) => {
     //pass user id and location in req.body
@@ -234,7 +231,7 @@ exports.confirmRide = functions.https.onRequest((req, res) => {
             console.log("(4) pull the first rollo object from the array", optimalRollo)
             admin
                 .firestore()
-                .collection('users')
+                .collection("users")
                 .doc(userId)
                 .update({ rolloId: optimalRollo.rolloId })
                 .catch(sendError)
@@ -250,13 +247,7 @@ exports.confirmRide = functions.https.onRequest((req, res) => {
         })
         .then((chosenRollo) => res.status(200).send({ data: chosenRollo }))
         //send back 200 status
-
         .catch(sendError)
-
-
-
-
-
 })
 
 

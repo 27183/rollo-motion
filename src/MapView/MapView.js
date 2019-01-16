@@ -1,9 +1,10 @@
 import React, { Component } from "react"
 import { TopBar, MapComponent, RideButtonContainer, AuthenticationPopup } from "./MapViewComponents"
 import SlidingUpPanel from 'rn-sliding-up-panel';
-import { Dimensions, Easing, View, Image } from 'react-native';
+import { Dimensions, Easing, View, Image, Text } from 'react-native';
 import { auth, functions } from "../../firebase/Fire"
 import { Location, Permissions } from 'expo';
+import Dialog, { SlideAnimation, DialogContent } from 'react-native-popup-dialog';
 
 
 export default class MapView extends Component {
@@ -19,7 +20,8 @@ export default class MapView extends Component {
             confirmingRide: false,
             loading: false,
             rollos: [],
-            chosenRolloLocation: ""
+            chosenRolloLocation: "",
+            dialogVisible: false
         }
     }
     openPanel = () => {
@@ -42,8 +44,8 @@ export default class MapView extends Component {
                 this.setState({ loading: false, chosenRolloLocation: data.location, rollos: [data] })
                 this.map.map.fitToCoordinates([{ latitude: this.state.chosenRolloLocation._latitude, longitude: this.state.chosenRolloLocation._longitude }, this.state.location.coords], { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: true })
                 return
-
             }
+            this.setState({ dialogVisible: true, loading: false })
             console.log("no available rides")
         } else {
             const { latitude, longitude } = this.state.location.coords
@@ -121,6 +123,26 @@ export default class MapView extends Component {
                 }
                 <TopBar navigation={this.props.navigation} cancelRide={this.cancelRide} />
                 <RideButtonContainer openPanel={this.openPanel} user={this.state.user} requestRide={this.requestRide} confirmingRide={this.state.confirmingRide} cancelRide={this.cancelRide} />
+                <Dialog
+                    visible={this.state.dialogVisible}
+                    onTouchOutside={() => {
+                        this.setState({ dialogVisible: false });
+                    }}
+                    dialogAnimation={new SlideAnimation({
+                        slideFrom: 'bottom',
+                    })}
+                    width={0.5}
+                    height={0.15}
+                >
+                    <DialogContent style={{ flex: 1, backgroundColor: "#33aadc", justifyContent: "center", alignItems: "center" }}>
+                        <View style={{ flex: 1, backgroundColor: "#33aadc", justifyContent: "center", alignItems: "center" }}>
+                            <Text style={{ color: "#FFF", alignSelf: "center", fontFamily: "Hiragino", fontSize: 15 }}>{"No rollos nearby 😢"}</Text>
+                            <Text style={{ color: "#FFF", alignSelf: "center", fontFamily: "Hiragino", fontSize: 15 }}>{"Try again later!"}</Text>
+
+                        </View>
+                    </DialogContent>
+                </Dialog>
+
                 <SlidingUpPanel
                     visible={this.state.visible}
                     height={this.state.height}

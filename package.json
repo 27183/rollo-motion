@@ -19,6 +19,7 @@
     "react-native-mask-loader": "0.0.3",
     "react-native-navbar": "^2.1.0",
     "react-native-phone-input": "^0.2.1",
+    "react-native-popup-dialog": "^0.16.6",
     "react-navigation": "^3.0.9",
     "rn-sliding-up-panel": "^1.3.1",
     "twilio": "^3.26.0",

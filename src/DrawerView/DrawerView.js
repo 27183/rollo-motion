@@ -41,7 +41,7 @@ export default class DrawerView extends Component {
                     }}>
                         <Text style={{
                             fontSize: 30, fontFamily: "Hiragino-Lighter"
-                        }}>{this.state.exists ? "Hey, " + this.state.userName : ""}</Text></View>
+                        }}>{this.state.exists ? "Hey, " + this.state.userName + " 👋" : ""}</Text></View>
                     <View style={{ flex: 3 / 10, alignItems: "center" }}>
                         <TouchableOpacity >
                             <Image style={styles.avatar} source={{ uri: this.state.exists ? this.state.photo : "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" }} />
