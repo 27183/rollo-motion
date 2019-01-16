@@ -13,12 +13,13 @@ export default class MapView extends Component {
             visible: false,
             height: Dimensions.get("window").height / 2,
             authenticated: false,
-            user: false,
+            user: "",
             location: null,
             region: null,
             confirmingRide: false,
             loading: false,
-            rollos: []
+            rollos: [],
+            chosenRolloLocation: ""
         }
     }
     openPanel = () => {
@@ -31,12 +32,19 @@ export default class MapView extends Component {
         this.setState({ height: Dimensions.get("window").height * 0.85 })
         this._panel.transitionTo({ toValue: Dimensions.get("window").height, duration: 2000, easing: Easing.bounce })
     }
-    requestRide = () => {
+    requestRide = async () => {
         if (this.state.confirmingRide) {
-            const location = this.state.region
+            const { location, user } = this.state
             this.setState({ loading: true })
+            const { data } = await functions.httpsCallable("confirmRide")({ userId: user.uid, location: location })
+            console.log("returned object", data)
+            if (data !== "no available rides!") {
+                this.setState({ loading: false, chosenRolloLocation: data.location, rollos: [data] })
+                this.map.map.fitToCoordinates([{ latitude: this.state.chosenRolloLocation._latitude, longitude: this.state.chosenRolloLocation._longitude }, this.state.location.coords], { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: true })
+                return
 
-            //send location to cloud and notify rollos
+            }
+            console.log("no available rides")
         } else {
             const { latitude, longitude } = this.state.location.coords
             this.map.map.animateToRegion({ latitude, longitude, latitudeDelta: 0.005, longitudeDelta: 0.005 }, 500);
@@ -52,6 +60,7 @@ export default class MapView extends Component {
             });
         }
         let location = await Location.getCurrentPositionAsync({});
+        console.log(location)
         this.setState({ location });
     };
     onRegionChange = region => {
@@ -70,20 +79,11 @@ export default class MapView extends Component {
 
     async componentDidMount() {
         const { data } = await functions.httpsCallable("requestRollos")({})
-        console.log("here they are :)", data)
-        this.setState({ rollos: data })
-
-        console.log("rollo objects:", this.props.rollos)
-
-
-
         auth.onAuthStateChanged(user => {
-            if (user) {
-                this.setState({ user: true })
-            } else {
-                this.setState({ user: false })
-                console.log("no user yet")
-            }
+            var userExists = user ? true : false
+            console.log("here's the user", user)
+            console.log("here are the rollos:", data)
+            this.setState({ user: user, rollos: data })
         })
     }
     render() {

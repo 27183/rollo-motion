@@ -158,7 +158,7 @@ exports.updateUserInfo = functions.https.onRequest((req, res) => {
                 .firestore()
                 .collection('users')
                 .doc(userRecord.uid)
-                .update({ displayName, photoURL })
+                .update({ displayName, photoURL, userId: userRecord.uid })
                 .then(() => res.send({ success: true, data: "updated" }))
                 .catch(sendError);
         })
@@ -172,15 +172,91 @@ exports.requestRollos = functions.https.onRequest((req, res) => {
     return admin
         .firestore()
         .collection("rollos")
-        .where("status", "==", "active")
+        .where("status", "==", "inactive")
         .get()
         .then(snap => {
             var rollosArr = []
             snap.forEach(documentSnapshot => {
                 rollosArr.push(documentSnapshot.data())
             })
+            console.log(rollosArr)
             return rollosArr
         })
         .then((rollos) => res.status(200).send({ data: rollos }))
         .catch(sendError)
 })
+
+
+
+
+exports.confirmRide = functions.https.onRequest((req, res) => {
+    //pass user id and location in req.body
+    const { userId, location } = req.body.data
+    console.log("(1) retrieve userId and location from req.body", userId, location)
+    //distance formula to calculate distances between coordinates
+    const distanceFormula = (rolloLocation, userLocation) => {
+        return Math.sqrt(Math.pow((rolloLocation.location._latitude - userLocation.coords.latitude), 2) + Math.pow((rolloLocation.location._longitude - userLocation.coords.longitude), 2))
+    }
+
+    const sendError = error => {
+        res.status(422).send(error);
+    }
+
+    return admin
+        .firestore()
+        .collection("rollos")
+        .where("status", "==", "inactive")
+        //retrive all inactive rollos
+        .get()
+        .then(snap => {
+            var rollosArr = []
+            snap.forEach(documentSnapshot => {
+                rollosArr.push(documentSnapshot.data())
+            })
+            //add all inactive rollos to array for comparison with user location
+            console.log("(2) retrieve all inactive rollos and store in array", rollosArr)
+            if (rollosArr.length == 0) { res.status(200).send({ data: "no available rides!" }) }
+            return rollosArr
+            //return inactive rollos
+        })
+        .then(rollos => {
+            return rollos.sort((a, b) => {
+                return distanceFormula(a, location) - distanceFormula(b, location)
+                //sort rollos in ascending order using distance formula
+            })
+        })
+        .then(sortedRollos => {
+            console.log("(3) sort retrieve rollos in order of their proximity", sortedRollos)
+            return sortedRollos[0]
+            //grab first element in newly sorted array (smallest distance)
+        })
+        .then(optimalRollo => {
+            console.log("(4) pull the first rollo object from the array", optimalRollo)
+            admin
+                .firestore()
+                .collection('users')
+                .doc(userId)
+                .update({ rolloId: optimalRollo.rolloId })
+                .catch(sendError)
+            //update user's rolloID to optimal rollo's ID    
+            admin
+                .firestore()
+                .collection("rollos")
+                .doc(optimalRollo.rolloId)
+                .update({ userId: userId, status: "active" })
+                .catch(sendError)
+            //update rollo's userID to user's ID & status property to active
+            return optimalRollo
+        })
+        .then((chosenRollo) => res.status(200).send({ data: chosenRollo }))
+        //send back 200 status
+
+        .catch(sendError)
+
+
+
+
+
+})
+
+

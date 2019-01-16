@@ -4,6 +4,8 @@ import { MapView, Constants } from 'expo';
 const { Marker } = MapView
 import styles from "../../styles"
 import { CustomMaps } from "../../index"
+import { auth, functions } from "../../../firebase/Fire"
+
 
 export default class MapComponent extends Component {
     constructor() {
@@ -45,6 +47,7 @@ export default class MapComponent extends Component {
                 {rollos && rollos.map(rollo => {
                     const { _longitude, _latitude } = rollo.location
                     return (<Marker
+                        key={rollo.rolloId}
                         coordinate={{ longitude: _longitude, latitude: _latitude }}
                         image={require("../../../assets/rolloPin.png")}
                     />
