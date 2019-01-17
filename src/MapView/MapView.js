@@ -6,14 +6,12 @@ import { auth, functions } from "../../firebase/Fire"
 import { Location, Permissions } from 'expo';
 import Dialog, { SlideAnimation, DialogContent, DialogButton } from 'react-native-popup-dialog';
 
-
 export default class MapView extends Component {
     constructor(props) {
         super(props)
         this.state = {
             visible: false,
-            height: Dimensions.get("window").height / 2,
-            authenticated: false,
+            panelHeight: Dimensions.get("window").height / 2,
             user: "",
             location: null,
             region: null,
@@ -21,7 +19,6 @@ export default class MapView extends Component {
             rolloOnTheWay: false,
             loading: false,
             rollos: [],
-            chosenRolloLocation: "",
             dialogVisible: false
         }
     }
@@ -29,10 +26,10 @@ export default class MapView extends Component {
         !this.state.user && this.setState({ visible: true })
     }
     closePanel = () => {
-        this.setState({ height: Dimensions.get("window").height / 2, visible: false })
+        this.setState({ panelHeight: Dimensions.get("window").height / 2, visible: false })
     }
     extendPanel = () => {
-        this.setState({ height: Dimensions.get("window").height * 0.85 })
+        this.setState({ panelHeight: Dimensions.get("window").height * 0.85 })
         this._panel.transitionTo({ toValue: Dimensions.get("window").height, duration: 2000, easing: Easing.bounce })
     }
     requestRide = async () => {
@@ -42,8 +39,8 @@ export default class MapView extends Component {
             const { data } = await functions.httpsCallable("confirmRide")({ userId: user.uid, location: location })
             console.log("returned object", data)
             if (data !== "no available rides!") {
-                this.setState({ loading: false, chosenRolloLocation: data.location, rollos: [data], rolloOnTheWay: true })
-                this.map.map.fitToCoordinates([{ latitude: this.state.chosenRolloLocation._latitude, longitude: this.state.chosenRolloLocation._longitude }, this.state.location.coords], { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: true })
+                this.setState({ loading: false, rollos: [data], rolloOnTheWay: true })
+                this.map.map.fitToCoordinates([{ latitude: data.location._latitude, longitude: data.location._longitude }, this.state.location.coords], { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: true })
                 return
             }
             this.setState({ dialogVisible: true, loading: false })
@@ -97,10 +94,12 @@ export default class MapView extends Component {
         this.setState({ rolloOnTheWay: false, rollos: data, rolloId: "" })
     }
     render() {
+        const { rollos, location, confirmingRide, rolloOnTheWay, loading, user, dialogVisible, visible, panelHeight } = this.state
+        const { width, height } = Dimensions.get("window")
         return (
             <React.Fragment>
-                <MapComponent rollos={this.state.rollos} ref={map => this.map = map} getLocation={this._getLocationAsync} location={this.state.location} onRegionChange={this.onRegionChange} />
-                {this.state.confirmingRide &&
+                <MapComponent rollos={rollos} ref={map => this.map = map} getLocation={this._getLocationAsync} location={location} onRegionChange={this.onRegionChange} />
+                {(confirmingRide && !rolloOnTheWay) &&
                     <View style={{
                         left: '50%',
                         marginLeft: -24,
@@ -113,15 +112,15 @@ export default class MapView extends Component {
                             width: 48
                         }} source={require("../../assets/pin.png")} />
                     </View>}
-                {this.state.loading &&
+                {loading &&
                     <View style={{
                         flex: 1,
                         position: 'absolute',
                         left: 0,
                         top: 0,
                         backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        width: Dimensions.get("window").width,
-                        height: Dimensions.get("window").height,
+                        width: width,
+                        height: height,
                         zIndex: 10,
                         justifyContent: "center",
                         alignItems: "center"
@@ -130,9 +129,9 @@ export default class MapView extends Component {
                     </View>
                 }
                 <TopBar navigation={this.props.navigation} cancelRide={this.cancelRide} />
-                <RideButtonContainer cancelRollo={this.cancelRollo} rolloOnTheWay={this.state.rolloOnTheWay} openPanel={this.openPanel} user={this.state.user} requestRide={this.requestRide} confirmingRide={this.state.confirmingRide} cancelRide={this.cancelRide} />
+                <RideButtonContainer cancelRollo={this.cancelRollo} rolloOnTheWay={rolloOnTheWay} openPanel={this.openPanel} user={user} requestRide={this.requestRide} confirmingRide={confirmingRide} cancelRide={this.cancelRide} />
                 <Dialog
-                    visible={this.state.dialogVisible}
+                    visible={dialogVisible}
                     onTouchOutside={() => {
                         this.setState({ dialogVisible: false });
                     }}
@@ -157,9 +156,9 @@ export default class MapView extends Component {
                 </Dialog>
 
                 <SlidingUpPanel
-                    visible={this.state.visible}
-                    height={this.state.height}
-                    draggableRange={{ top: this.state.height, bottom: 0 }}
+                    visible={visible}
+                    height={panelHeight}
+                    draggableRange={{ top: panelHeight, bottom: 0 }}
                     backdropOpacity={0.25}
                     onRequestClose={this.closePanel}
                     ref={c => this._panel = c}>

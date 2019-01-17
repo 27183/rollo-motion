@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import styles from "../styles"
+import styles from "./styles"
 import { ScrollView, SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native"
 import { auth } from "../../firebase/Fire"
 
@@ -18,7 +18,6 @@ export default class DrawerView extends Component {
                 this.setState({ userName: user.displayName, exists: true, photo: user.photoURL || "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" })
             } else {
                 this.setState({ exists: false })
-
                 console.log("no user yet")
             }
         })
@@ -29,55 +28,52 @@ export default class DrawerView extends Component {
     }
     render() {
         const { closeDrawer } = this.props.navigation
+        const { exists, userName, photo } = this.state
         return (
-            <ScrollView style={{ backgroundColor: "#fff", borderTopRightRadius: 30, borderBottomRightRadius: 30 }}
+            <ScrollView style={styles.scrollViewContainer}
                 scrollEnabled={false}>
-                <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
-                    <View style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingBottom: 10,
-                        paddingTop: 30
-                    }}>
-                        <Text style={{
-                            fontSize: 30, fontFamily: "Hiragino-Lighter"
-                        }}>{this.state.exists ? "Hey, " + this.state.userName + " 👋" : ""}</Text></View>
-                    <View style={{ flex: 3 / 10, alignItems: "center" }}>
+                <SafeAreaView style={styles.safeAreaViewContainer} forceInset={{ top: 'always', horizontal: 'never' }}>
+                    <View style={styles.userGreetingContainer}>
+                        <Text style={styles.userGreetingContainerText}>{exists ? "Hey, " + userName + " 👋" : ""}</Text>
+                    </View>
+                    <View style={styles.userAvatarContainer}>
                         <TouchableOpacity >
-                            <Image style={styles.avatar} source={{ uri: this.state.exists ? this.state.photo : "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" }} />
+                            <Image style={styles.avatar} source={{ uri: exists ? photo : "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" }} />
                         </TouchableOpacity>
                     </View>
-                    <View style={{ flex: 7 / 10, paddingLeft: 20 }}>
-                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
-                            <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                <Image style={{ width: 25, height: 25 }} source={require("../../assets/map.png")} />
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Map</Text>
+                    <View style={styles.tabContainer}>
+                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                            <View style={styles.tabContainerContents}>
+                                <Image style={styles.tabContainerImage} source={require("../../assets/map.png")} />
+                                <Text style={styles.tabContainerText}>Map</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
-                            <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                <Image style={{ width: 20, height: 20 }} source={require("../../assets/rideHistory.png")} />
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Ride History</Text>
+                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                            <View style={styles.tabContainerContents}>
+                                <Image style={styles.tabContainerImage} source={require("../../assets/rideHistory.png")} />
+                                <Text style={styles.tabContainerText}>Ride History</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
-                            <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                <Image style={{ width: 25, height: 25 }} source={require("../../assets/help.png")} />
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Help</Text>
+                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                            <View style={styles.tabContainerContents}>
+                                <Image style={styles.tabContainerImage} source={require("../../assets/help.png")} />
+                                <Text style={styles.tabContainerText}>Help</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={closeDrawer} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
-                            <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                <Image style={{ width: 25, height: 25 }} source={require("../../assets/settings.png")} />
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Settings</Text>
+                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                            <View style={styles.tabContainerContents}>
+                                <Image style={styles.tabContainerImage} source={require("../../assets/settings.png")} />
+                                <Text style={styles.tabContainerText}>Settings</Text>
                             </View>
                         </TouchableOpacity>
-                        {this.state.exists && <TouchableOpacity onPress={this.logOut} style={{ borderWidth: 2, borderColor: "#fff", padding: 20 }}>
-                            <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                <Image style={{ width: 25, height: 25 }} source={require("../../assets/logout.png")} />
-                                <Text style={{ fontSize: 20, fontFamily: "Hiragino-Lighter" }}>Log Out</Text>
-                            </View>
-                        </TouchableOpacity>}
+                        {exists &&
+                            <TouchableOpacity onPress={this.logOut} style={styles.tabContainerTouchableOpacity}>
+                                <View style={styles.tabContainerContents}>
+                                    <Image style={styles.tabContainerImage} source={require("../../assets/logout.png")} />
+                                    <Text style={styles.tabContainerText}>Log Out</Text>
+                                </View>
+                            </TouchableOpacity>
+                        }
                     </View>
                 </SafeAreaView>
             </ScrollView >

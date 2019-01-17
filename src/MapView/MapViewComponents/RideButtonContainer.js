@@ -25,10 +25,10 @@ export default RideButtonContainer = (props) => {
                     borderRadius: 100,
                 }}
             >
-                <Text style={{ color: "white" }}>{confirmingRide ? `${rolloOnTheWay ? "Cancel" : "Confirm"}` : "Ride"}</Text>
+                <Text style={{ color: "white" }}>{confirmingRide ? `${rolloOnTheWay ? "Cancel Ride" : "Confirm"}` : "Ride"}</Text>
             </TouchableOpacity>
 
-            {confirmingRide && <TouchableOpacity
+            {(confirmingRide && !rolloOnTheWay) && <TouchableOpacity
                 style={{
                     width: 40,
                     height: 40,

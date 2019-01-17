@@ -275,7 +275,16 @@ exports.cancelRollo = functions.https.onRequest((req, res) => {
         .then(() => res.status(200).send({ data: "success" }))
         .catch(sendError)
     //remove user's rolloID from rollo
+})
 
+exports.restoreUserState = functions.https.onRequest((req, res) => {
+    const { id } = req.body.data
+    return admin
+        .firestore()
+        .collection("users")
+        .doc(id)
+        .get()
+        .then(userInfo => console.log(userInfo))
 })
 
 
