@@ -3,11 +3,11 @@ import { Text, TouchableOpacity } from 'react-native';
 
 
 export default RideButtonContainer = (props) => {
-    const { user, openPanel, requestRide, confirmingRide, cancelRide } = props
+    const { user, openPanel, requestRide, confirmingRide, cancelRide, cancelRollo, rolloOnTheWay } = props
     return (
         <React.Fragment>
             <TouchableOpacity
-                onPress={!user ? openPanel : requestRide}
+                onPress={!user ? openPanel : (rolloOnTheWay ? cancelRollo : requestRide)}
                 style={{
                     flex: 1,
                     position: "absolute",
@@ -25,7 +25,7 @@ export default RideButtonContainer = (props) => {
                     borderRadius: 100,
                 }}
             >
-                <Text style={{ color: "white" }}>{confirmingRide ? "Confirm" : "Ride"}</Text>
+                <Text style={{ color: "white" }}>{confirmingRide ? `${rolloOnTheWay ? "Cancel" : "Confirm"}` : "Ride"}</Text>
             </TouchableOpacity>
 
             {confirmingRide && <TouchableOpacity

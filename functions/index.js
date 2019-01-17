@@ -212,7 +212,7 @@ exports.confirmRide = functions.https.onRequest((req, res) => {
             })
             //add all inactive rollos to array for comparison with user location
             console.log("(2) retrieve all inactive rollos and store in array", rollosArr)
-            if (rollosArr.length == 0) { res.status(200).send({ data: "no available rides!" }) }
+            if (rollosArr.length == 0) { res.send({ data: "no available rides!" }) }
             return rollosArr
             //return inactive rollos
         })
@@ -248,6 +248,34 @@ exports.confirmRide = functions.https.onRequest((req, res) => {
         .then((chosenRollo) => res.status(200).send({ data: chosenRollo }))
         //send back 200 status
         .catch(sendError)
+})
+
+
+
+
+exports.cancelRollo = functions.https.onRequest((req, res) => {
+    //pass user id, rollo id, and location in req.body
+    const { userId, rolloId } = req.body.data
+    console.log("(1) retrieve userId and location from req.body", userId, rolloId)
+    const sendError = error => {
+        res.status(422).send(error);
+    }
+    admin
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .update({ rolloId: "" })
+        .catch(sendError)
+    //remove rollo's rolloID from user & update status property to inactive
+    admin
+        .firestore()
+        .collection("rollos")
+        .doc(rolloId)
+        .update({ userId: "", status: "inactive" })
+        .then(() => res.status(200).send({ data: "success" }))
+        .catch(sendError)
+    //remove user's rolloID from rollo
+
 })
 
 

@@ -18,6 +18,7 @@ export default class MapView extends Component {
             location: null,
             region: null,
             confirmingRide: false,
+            rolloOnTheWay: false,
             loading: false,
             rollos: [],
             chosenRolloLocation: "",
@@ -41,7 +42,7 @@ export default class MapView extends Component {
             const { data } = await functions.httpsCallable("confirmRide")({ userId: user.uid, location: location })
             console.log("returned object", data)
             if (data !== "no available rides!") {
-                this.setState({ loading: false, chosenRolloLocation: data.location, rollos: [data] })
+                this.setState({ loading: false, chosenRolloLocation: data.location, rollos: [data], rolloOnTheWay: true })
                 this.map.map.fitToCoordinates([{ latitude: this.state.chosenRolloLocation._latitude, longitude: this.state.chosenRolloLocation._longitude }, this.state.location.coords], { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: true })
                 return
             }
@@ -88,6 +89,13 @@ export default class MapView extends Component {
             this.setState({ user: user, rollos: data })
         })
     }
+    cancelRollo = async () => {
+        console.log("ride cancelled")
+        await functions.httpsCallable("cancelRollo")({ userId: this.state.user.uid, rolloId: this.state.rollos[0].rolloId })
+        const { data } = await functions.httpsCallable("requestRollos")({})
+        this.cancelRide()
+        this.setState({ rolloOnTheWay: false, rollos: data, rolloId: "" })
+    }
     render() {
         return (
             <React.Fragment>
@@ -122,7 +130,7 @@ export default class MapView extends Component {
                     </View>
                 }
                 <TopBar navigation={this.props.navigation} cancelRide={this.cancelRide} />
-                <RideButtonContainer openPanel={this.openPanel} user={this.state.user} requestRide={this.requestRide} confirmingRide={this.state.confirmingRide} cancelRide={this.cancelRide} />
+                <RideButtonContainer cancelRollo={this.cancelRollo} rolloOnTheWay={this.state.rolloOnTheWay} openPanel={this.openPanel} user={this.state.user} requestRide={this.requestRide} confirmingRide={this.state.confirmingRide} cancelRide={this.cancelRide} />
                 <Dialog
                     visible={this.state.dialogVisible}
                     onTouchOutside={() => {
