@@ -128,7 +128,7 @@ export default class MapView extends Component {
                         <Image style={{ width: 150, height: 150, opacity: 0.5 }} source={require('../../assets/loadingFinal.gif')} />
                     </View>
                 }
-                <TopBar navigation={this.props.navigation} cancelRide={this.cancelRide} />
+                <TopBar rolloOnTheWay={rolloOnTheWay} navigation={this.props.navigation} cancelRide={this.cancelRide} />
                 <RideButtonContainer cancelRollo={this.cancelRollo} rolloOnTheWay={rolloOnTheWay} openPanel={this.openPanel} user={user} requestRide={this.requestRide} confirmingRide={confirmingRide} cancelRide={this.cancelRide} />
                 <Dialog
                     visible={dialogVisible}

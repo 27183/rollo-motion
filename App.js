@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { createDrawerNavigator, createStackNavigator, DrawerItems, Dimensions, NavigationActions, createAppContainer } from "react-navigation"
-import { MapView, DrawerView, styles, SettingsView } from "./src"
-import { View } from "react-native"
+import { createDrawerNavigator, createAppContainer } from "react-navigation"
+import { MapView, DrawerView, SettingsView } from "./src"
 import { Font } from 'expo';
 const Hiragino = require("./assets/hiragino.otf")
 const HiraginoLighter = require("./assets/hiragino-lighter.otf")

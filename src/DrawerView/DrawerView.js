@@ -26,6 +26,16 @@ export default class DrawerView extends Component {
         auth.signOut()
         this.props.navigation.closeDrawer()
     }
+    navigateToSettings = () => {
+        const { navigate, closeDrawer } = this.props.navigation
+        navigate("SettingsView")
+        closeDrawer()
+    }
+    navigateToMap = () => {
+        const { navigate, closeDrawer } = this.props.navigation
+        navigate("MapView")
+        closeDrawer()
+    }
     render() {
         const { closeDrawer } = this.props.navigation
         const { exists, userName, photo } = this.state
@@ -42,7 +52,7 @@ export default class DrawerView extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.tabContainer}>
-                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                        <TouchableOpacity onPress={this.navigateToMap} style={styles.tabContainerTouchableOpacity}>
                             <View style={styles.tabContainerContents}>
                                 <Image style={styles.tabContainerImage} source={require("../../assets/map.png")} />
                                 <Text style={styles.tabContainerText}>Map</Text>
@@ -60,7 +70,7 @@ export default class DrawerView extends Component {
                                 <Text style={styles.tabContainerText}>Help</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                        <TouchableOpacity onPress={this.navigateToSettings} style={styles.tabContainerTouchableOpacity}>
                             <View style={styles.tabContainerContents}>
                                 <Image style={styles.tabContainerImage} source={require("../../assets/settings.png")} />
                                 <Text style={styles.tabContainerText}>Settings</Text>

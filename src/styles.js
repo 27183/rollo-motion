@@ -34,7 +34,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: Dimensions.get("window").width,
         height: 50,
-        justifyContent: "center"
+        justifyContent: "center",
+        zIndex: 15
     },
     bottomBar: {
         flex: 1,

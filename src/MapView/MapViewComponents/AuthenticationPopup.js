@@ -1,10 +1,11 @@
 import React, { Component } from "react"
-import { View, Animated } from "react-native"
+import { View, Animated, Text, TouchableOpacity } from "react-native"
 import styles from "../../styles"
 import { functions, auth, storage } from "../../../firebase/Fire"
 import { ImagePicker, Permissions } from 'expo';
 import uuid from 'uuid';
 import { CodeInputScreen, PhoneInputScreen, UserInfoScreen } from "./AuthenticationPopupComponents.js"
+
 
 export default class AuthenticationPopup extends Component {
     constructor() {
@@ -27,7 +28,7 @@ export default class AuthenticationPopup extends Component {
             photoPickDisabled: true,
             verifyingCode: false,
             signingIn: false,
-            invalidCode: false
+            invalidCode: false,
         }
     }
 
@@ -75,6 +76,7 @@ export default class AuthenticationPopup extends Component {
             //add button to re-send a code
         }
     }
+
 
     signUserIn = async (token, name, phone) => {
         this.setState({ signingIn: true })
@@ -165,7 +167,7 @@ export default class AuthenticationPopup extends Component {
                 </Animated.View>
 
                 <Animated.View style={{ opacity: this.state.userNameOpacity, position: "absolute", top: 20, zIndex: this.state.nameZPosition, justifyContent: "center" }}>
-                    <UserInfoScreen signedIn={this.state.signingIn} photoPickDisabled={this.state.photoPickDisabled} pickImage={this._pickImage} uploading={this.state.uploading} image={this.state.image} onChangeText={this.updateName} text={this.state.text} signUserIn={this.signUserIn} token={this.state.token} phoneNumber={this.state.phoneNumber} />
+                    <UserInfoScreen signedIn={this.state.signingIn} photoPickDisabled={this.state.photoPickDisabled} pickImage={this._pickImage} uploading={this.state.uploading} image={this.state.image} onChangeText={this.updateName} text={this.state.text} signUserIn={this.signUserIn} token={this.state.token} phoneNumber={this.state.phoneNumber} signingIn={this.state.signingIn} />
                 </Animated.View>
             </View>
         )

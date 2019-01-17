@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Text, Image, TouchableOpacity } from "react-native"
+import { Text, Image, TouchableOpacity, ActivityIndicator } from "react-native"
 import CodeInput from 'react-native-confirmation-code-input';
 import loadingGif from "../../../../assets/loading.gif"
 
@@ -31,7 +31,7 @@ export default class CodeInputScreen extends Component {
                     {invalidCode &&
 
                         <TouchableOpacity style={{ alignSelf: "center", backgroundColor: "#33aadc", width: 300, height: 40, borderRadius: 10, flexDirection: "row", justifyContent: "center", alignItems: "center", top: 40 }} onPress={() => resendCode(phoneNumber)}>
-                            <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end" }}>Send new code</Text>
+                            <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end", color: "#FFF" }}>Send new code</Text>
                         </TouchableOpacity>}
                 </React.Fragment>
         )
