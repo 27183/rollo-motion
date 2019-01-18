@@ -103,7 +103,7 @@ export default class SettingsView extends Component {
                         <TouchableOpacity disabled={false} onPress={this._pickImage}>
                             <View>
                                 <Image style={styles.avatar} source={uploading ? loadingGif : { uri: photoUrl || "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" }} />
-                                <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../assets/add-picture.png")} />
+                                <Image style={{ zIndex: 2, width: 40, height: 40, position: "relative", alignSelf: "flex-end", bottom: 40 }} source={require("../../assets/add-picture-blue-white.png")} />
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -143,7 +143,6 @@ export default class SettingsView extends Component {
                                 <ActivityIndicator size="small" color="#FFF" />
                                 :
                                 <Text style={{ fontSize: 20, fontFamily: "Hiragino", alignSelf: "flex-end", color: "#FFF" }}>{"Submit"}</Text>
-
                             }
                         </TouchableOpacity>
                     </View>

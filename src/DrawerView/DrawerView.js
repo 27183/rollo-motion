@@ -47,7 +47,7 @@ export default class DrawerView extends Component {
                         <Text style={styles.userGreetingContainerText}>{exists ? "Hey, " + userName + " 👋" : ""}</Text>
                     </View>
                     <View style={styles.userAvatarContainer}>
-                        <TouchableOpacity >
+                        <TouchableOpacity onPress={this.navigateToSettings} >
                             <Image style={styles.avatar} source={{ uri: exists ? photo : "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" }} />
                         </TouchableOpacity>
                     </View>

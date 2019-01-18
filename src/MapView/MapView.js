@@ -152,12 +152,12 @@ export default class MapView extends Component {
                             onPress={this.zoomOut}
                         />,
                     ]}
-                    width={0.5}
+                    width={0.8}
                     height={0.15}
                 >
                     <DialogContent style={{ flex: 1, backgroundColor: "#FFF", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
-                        <Text style={{ color: "black", fontFamily: "Hiragino-Lighter", fontSize: 16 }}>{"No rollos nearby 😢"}</Text>
-                        <Text style={{ color: "black", fontFamily: "Hiragino-Lighter", fontSize: 16 }}>{"Try again later!"}</Text>
+                        <Text style={{ color: "black", fontFamily: "Hiragino-Lighter", fontSize: 20 }}>{"No rollos nearby 😢"}</Text>
+                        <Text style={{ color: "black", fontFamily: "Hiragino-Lighter", fontSize: 20 }}>{"Try again later!"}</Text>
                     </DialogContent>
                 </Dialog>
 
