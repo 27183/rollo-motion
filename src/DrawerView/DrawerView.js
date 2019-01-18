@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import styles from "./styles"
 import { ScrollView, SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native"
-import { auth } from "../../firebase/Fire"
+import { auth, functions } from "../../firebase/Fire"
 
 export default class DrawerView extends Component {
     constructor() {
@@ -15,7 +15,7 @@ export default class DrawerView extends Component {
     componentDidMount() {
         auth.onAuthStateChanged(user => {
             if (user) {
-                this.setState({ userName: user.displayName, exists: true, photo: user.photoURL || "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" })
+                this.setState({ userId: user.uid, userName: user.displayName, exists: true, photo: user.photoURL || "https://hovercraftdoggy.files.wordpress.com/2012/07/iain-acton3-we-go-with-the-flow1.gif" })
             } else {
                 this.setState({ exists: false })
                 console.log("no user yet")
@@ -41,6 +41,7 @@ export default class DrawerView extends Component {
         navigate("RideHistoryView")
         closeDrawer()
     }
+
     render() {
         const { closeDrawer } = this.props.navigation
         const { exists, userName, photo } = this.state
