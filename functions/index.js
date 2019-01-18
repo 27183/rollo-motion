@@ -435,7 +435,6 @@ exports.retrieveUserHistory = functions.https.onRequest((req, res) => {
         res.status(422).send(error);
     }
 
-
     return admin
         .firestore()
         .collection("rides")
@@ -445,7 +444,12 @@ exports.retrieveUserHistory = functions.https.onRequest((req, res) => {
             if (!doc.exists) {
                 console.log("no such document")
             } else {
-                res.status(200).send({ data: doc.data() })
+                console.log("here are the rollos", doc.data())
+                const keys = Object.keys(doc.data())
+                console.log("here are the keys", keys)
+                const history = doc.data()
+                const historyArr = Object.keys(history).map(i => history[i])
+                res.status(200).send({ data: historyArr })
             }
         })
         .catch(sendError)

@@ -36,6 +36,11 @@ export default class DrawerView extends Component {
         navigate("MapView")
         closeDrawer()
     }
+    navigateToRideHistory = () => {
+        const { navigate, closeDrawer } = this.props.navigation
+        navigate("RideHistoryView")
+        closeDrawer()
+    }
     render() {
         const { closeDrawer } = this.props.navigation
         const { exists, userName, photo } = this.state
@@ -58,7 +63,7 @@ export default class DrawerView extends Component {
                                 <Text style={styles.tabContainerText}>Map</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={closeDrawer} style={styles.tabContainerTouchableOpacity}>
+                        <TouchableOpacity onPress={this.navigateToRideHistory} style={styles.tabContainerTouchableOpacity}>
                             <View style={styles.tabContainerContents}>
                                 <Image style={styles.tabContainerImage} source={require("../../assets/rideHistory.png")} />
                                 <Text style={styles.tabContainerText}>Ride History</Text>

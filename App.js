@@ -10,7 +10,7 @@ import Loader from './src/Loader/Loader';
 const Rollo = createAppContainer(createDrawerNavigator({
   MapView: { screen: MapView },
   SettingsView: { screen: SettingsView },
-  RideHistoryView: () => <RideHistoryView />
+  RideHistoryView: { screen: RideHistoryView }
 },
   {
     drawerPosition: "left",

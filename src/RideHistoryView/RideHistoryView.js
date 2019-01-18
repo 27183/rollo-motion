@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Alert, Text, TouchableOpacity, ScrollView } from "react-native";
-// import { UltimateListView } from "react-native-ultimate-listview";
+import { View, Text, ScrollView, Dimensions } from "react-native";
 import { auth, functions } from "../../firebase/Fire"
+import CardView from 'react-native-cardview'
+import { TopBar } from "../MapView/MapViewComponents"
+import dateFormat from "dateformat"
 
 
 export default class RideHistoryView extends Component {
@@ -9,7 +11,7 @@ export default class RideHistoryView extends Component {
         super()
         this.state = {
             userId: false,
-            history: null
+            history: [],
         }
     }
     async componentDidMount() {
@@ -20,7 +22,6 @@ export default class RideHistoryView extends Component {
                 console.log("here's the user's UID:", this.state.userId)
                 this.retrieveUserHistory()
             }
-
         })
     }
     retrieveUserHistory = async () => {
@@ -28,21 +29,37 @@ export default class RideHistoryView extends Component {
         console.log("finally, some data", data)
         this.setState({ history: data })
     }
+    distanceFormula = (rolloLocation, userLocation) => {
+        return Math.sqrt(Math.pow((rolloLocation.startLocation.latitude - userLocation.endLocation.latitude), 2) + Math.pow((rolloLocation.startLocation.longitude - userLocation.startLocation.longitude), 2))
+    }
     render() {
-        const keys = Object.keys(this.state.history) || []
         return (
-            <ScrollView>
-                {this.state.history &&
-                    keys.map((key) => {
-                        return
-                        (<Text>
-                            {this.state.history[key].rolloId}
-                        </Text>)
-
-                    })
-                }
-                }
-            </ScrollView>
+            <React.Fragment>
+                <TopBar navigation={this.props.navigation} />
+                <ScrollView contentContainerStyle={{ flex: 1, flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                    {this.state.history.sort((a, b) => a.startTime - b.startTime).map(ride => <CardView
+                        cardElevation={2}
+                        cardMaxElevation={2}
+                        cornerRadius={10}
+                        cornerOverlap={false}
+                        key={ride.startTime}
+                        style={{ width: Dimensions.get("window").width * 0.90, height: Dimensions.get("window").height * 0.15, backgroundColor: "#33aadc", margin: 10 }}
+                    >
+                        <View style={{ margin: 15 }}>
+                            <Text style={{ fontFamily: "Hiragino-Lighter" }}>
+                                {dateFormat(ride.startTime, "dddd, mmmm dS, yyyy")}
+                            </Text>
+                            {ride.endTime ?
+                                <Text style={{ fontFamily: "Hiragino-Lightest" }}>
+                                    {`${dateFormat(ride.startTime, "h:MM TT")}` + " -> " + `${dateFormat(ride.endTime, "h:MM TT")}`}
+                                </Text>
+                                : <Text style={{ fontFamily: "Hiragino-Lightest" }}>
+                                    {dateFormat(ride.startTime, "h:MM TT")}
+                                </Text>}
+                        </View>
+                    </CardView>)}
+                </ScrollView>
+            </React.Fragment>
         )
     }
 }
