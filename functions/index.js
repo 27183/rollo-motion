@@ -186,9 +186,123 @@ exports.requestRollos = functions.https.onRequest((req, res) => {
         .catch(sendError)
 })
 
+// exports.confirmRide = functions.https.onRequest((req, res) => {
+//     //pass user id and location in req.body
+//     const { userId, location } = req.body.data
+//     console.log("(1) retrieve userId and location from req.body", userId, location)
+//     //distance formula to calculate distances between coordinates
+//     const distanceFormula = (rolloLocation, userLocation) => {
+//         return Math.sqrt(Math.pow((rolloLocation.location._latitude - userLocation.coords.latitude), 2) + Math.pow((rolloLocation.location._longitude - userLocation.coords.longitude), 2))
+//     }
+
+//     const sendError = error => {
+//         res.status(422).send(error);
+//     }
+
+//     return admin
+//         .firestore()
+//         .collection("rollos")
+//         .where("status", "==", "inactive")
+//         //retrive all inactive rollos
+//         .get()
+//         .then(snap => {
+//             var rollosArr = []
+//             snap.forEach(documentSnapshot => {
+//                 rollosArr.push(documentSnapshot.data())
+//             })
+//             //add all inactive rollos to array for comparison with user location
+//             console.log("(2) retrieve all inactive rollos and store in array", rollosArr)
+//             if (rollosArr.length == 0) { res.send({ data: "no available rides!" }) }
+//             return rollosArr
+//             //return inactive rollos
+//         })
+//         .then(rollos => {
+//             return rollos.sort((a, b) => {
+//                 return distanceFormula(a, location) - distanceFormula(b, location)
+//                 //sort rollos in ascending order using distance formula
+//             })
+//         })
+//         .then(sortedRollos => {
+//             console.log("(3) sort retrieve rollos in order of their proximity", sortedRollos)
+//             return sortedRollos[0]
+//             //grab first element in newly sorted array (smallest distance)
+//         })
+//         .then(optimalRollo => {
+//             console.log("(4) pull the first rollo object from the array", optimalRollo)
+//             admin
+//                 .firestore()
+//                 .collection("users")
+//                 .doc(userId)
+//                 .update({ rolloId: optimalRollo.rolloId })
+//                 .catch(sendError)
+//             //update user's rolloID to optimal rollo's ID    
+//             admin
+//                 .firestore()
+//                 .collection("rollos")
+//                 .doc(optimalRollo.rolloId)
+//                 .update({ userId: userId, status: "active" })
+//                 .catch(sendError)
+//             //update rollo's userID to user's ID & status property to active
+//             return optimalRollo
+//         })
+//         .then((chosenRollo) => res.status(200).send({ data: chosenRollo }))
+//         //send back 200 status
+//         .catch(sendError)
+// })
+
+
+
+
+// exports.cancelRollo = functions.https.onRequest((req, res) => {
+//     //pass user id, rollo id, and location in req.body
+//     const { userId, rolloId } = req.body.data
+//     console.log("(1) retrieve userId and location from req.body", userId, rolloId)
+//     const sendError = error => {
+//         res.status(422).send(error);
+//     }
+//     admin
+//         .firestore()
+//         .collection("users")
+//         .doc(userId)
+//         .update({ rolloId: "" })
+//         .catch(sendError)
+//     //remove rollo's rolloID from user & update status property to inactive
+//     admin
+//         .firestore()
+//         .collection("rollos")
+//         .doc(rolloId)
+//         .update({ userId: "", status: "inactive" })
+//         .then(() => res.status(200).send({ data: "success" }))
+//         .catch(sendError)
+//     //remove user's rolloID from rollo
+// })
+
+// exports.restoreUserState = functions.https.onRequest((req, res) => {
+//     const { id } = req.body.data
+//     return admin
+//         .firestore()
+//         .collection("users")
+//         .doc(id)
+//         .get()
+//         .then(userInfo => console.log(userInfo))
+// })
+
+
+
+
+//look at rides object
+//if rides object with user's UID exists
+//update the doc with a new ride
+//add start coordinates and start time
+//else create rides object with user's UID as doc ID
+//update the doc with a new ride
+//add start coordinates and start time
+
+
+
 exports.confirmRide = functions.https.onRequest((req, res) => {
     //pass user id and location in req.body
-    const { userId, location } = req.body.data
+    const { userId, location, startTime } = req.body.data
     console.log("(1) retrieve userId and location from req.body", userId, location)
     //distance formula to calculate distances between coordinates
     const distanceFormula = (rolloLocation, userLocation) => {
@@ -245,7 +359,22 @@ exports.confirmRide = functions.https.onRequest((req, res) => {
             //update rollo's userID to user's ID & status property to active
             return optimalRollo
         })
+        .then((rollo) => {
+            console.log("rollo ! :)", rollo)
+            var newRideRecord = {};
+
+            newRideRecord[startTime] = { rolloId: rollo.rolloId, startLocation: location.coords, startTime: startTime };
+            console.log("here's the new ride record:", newRideRecord)
+            admin
+                .firestore()
+                .collection("rides")
+                .doc(userId)
+                .set(newRideRecord, { merge: true })
+                .catch(sendError);
+            return rollo
+        })
         .then((chosenRollo) => res.status(200).send({ data: chosenRollo }))
+
         //send back 200 status
         .catch(sendError)
 })
@@ -255,7 +384,7 @@ exports.confirmRide = functions.https.onRequest((req, res) => {
 
 exports.cancelRollo = functions.https.onRequest((req, res) => {
     //pass user id, rollo id, and location in req.body
-    const { userId, rolloId } = req.body.data
+    const { userId, rolloId, location, startTime, endTime } = req.body.data
     console.log("(1) retrieve userId and location from req.body", userId, rolloId)
     const sendError = error => {
         res.status(422).send(error);
@@ -265,9 +394,29 @@ exports.cancelRollo = functions.https.onRequest((req, res) => {
         .collection("users")
         .doc(userId)
         .update({ rolloId: "" })
-        .catch(sendError)
-    //remove rollo's rolloID from user & update status property to inactive
+        .catch(sendError);
+
+    // admin
+    //     .firestore()
+    //     .collection("rides")
+    //     .doc(userId)
+    //     .update({ endTime: Date.now(), endLocation: location.coords })
+    //     .catch(sendError)
+    //update ride record
+
+    var newRideRecord = {};
+    newRideRecord[startTime] = { endLocation: location.coords, endTime: endTime };
+    console.log("here's the new ride record:", newRideRecord)
     admin
+        .firestore()
+        .collection("rides")
+        .doc(userId)
+        .set(newRideRecord, { merge: true })
+        .catch(sendError);
+
+
+    //remove rollo's rolloID from user & update status property to inactive
+    return admin
         .firestore()
         .collection("rollos")
         .doc(rolloId)
@@ -286,5 +435,4 @@ exports.restoreUserState = functions.https.onRequest((req, res) => {
         .get()
         .then(userInfo => console.log(userInfo))
 })
-
 

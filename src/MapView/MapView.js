@@ -35,8 +35,9 @@ export default class MapView extends Component {
     requestRide = async () => {
         if (this.state.confirmingRide) {
             const { location, user } = this.state
-            this.setState({ loading: true })
-            const { data } = await functions.httpsCallable("confirmRide")({ userId: user.uid, location: location })
+            const startTime = Date.now()
+            this.setState({ loading: true, startTime: startTime })
+            const { data } = await functions.httpsCallable("confirmRide")({ userId: user.uid, location: location, startTime: startTime })
             console.log("returned object", data)
             if (data !== "no available rides!") {
                 this.setState({ loading: false, rollos: [data], rolloOnTheWay: true })
@@ -88,10 +89,13 @@ export default class MapView extends Component {
     }
     cancelRollo = async () => {
         console.log("ride cancelled")
-        await functions.httpsCallable("cancelRollo")({ userId: this.state.user.uid, rolloId: this.state.rollos[0].rolloId })
+        const endTime = Date.now()
+        this.setState({ loading: true, endTime: endTime })
+
+        await functions.httpsCallable("cancelRollo")({ userId: this.state.user.uid, rolloId: this.state.rollos[0].rolloId, location: this.state.location, startTime: this.state.startTime, endTime: endTime })
         const { data } = await functions.httpsCallable("requestRollos")({})
         this.cancelRide()
-        this.setState({ rolloOnTheWay: false, rollos: data, rolloId: "" })
+        this.setState({ rolloOnTheWay: false, rollos: data, rolloId: "", loading: false })
     }
     render() {
         const { rollos, location, confirmingRide, rolloOnTheWay, loading, user, dialogVisible, visible, panelHeight } = this.state
