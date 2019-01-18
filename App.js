@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { createDrawerNavigator, createAppContainer } from "react-navigation"
-import { MapView, DrawerView, SettingsView } from "./src"
+import { MapView, DrawerView, SettingsView, RideHistoryView } from "./src"
 import { Font } from 'expo';
 const Hiragino = require("./assets/hiragino.otf")
 const HiraginoLighter = require("./assets/hiragino-lighter.otf")
@@ -9,7 +9,8 @@ import Loader from './src/Loader/Loader';
 
 const Rollo = createAppContainer(createDrawerNavigator({
   MapView: { screen: MapView },
-  SettingsView: { screen: SettingsView }
+  SettingsView: { screen: SettingsView },
+  RideHistoryView: () => <RideHistoryView />
 },
   {
     drawerPosition: "left",

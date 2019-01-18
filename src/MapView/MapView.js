@@ -4,7 +4,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 import { Dimensions, Easing, View, Image, Text } from 'react-native';
 import { auth, functions } from "../../firebase/Fire"
 import { Location, Permissions } from 'expo';
-import Dialog, { SlideAnimation, DialogContent, DialogButton } from 'react-native-popup-dialog';
+import Dialog, { SlideAnimation, DialogContent, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 
 export default class MapView extends Component {
     constructor(props) {
@@ -97,6 +97,10 @@ export default class MapView extends Component {
         this.cancelRide()
         this.setState({ rolloOnTheWay: false, rollos: data, rolloId: "", loading: false })
     }
+    zoomOut = () => {
+        this.cancelRide()
+        this.setState({ dialogVisible: false })
+    }
     render() {
         const { rollos, location, confirmingRide, rolloOnTheWay, loading, user, dialogVisible, visible, panelHeight } = this.state
         const { width, height } = Dimensions.get("window")
@@ -139,23 +143,21 @@ export default class MapView extends Component {
                     onTouchOutside={() => {
                         this.setState({ dialogVisible: false });
                     }}
-                    dialogAnimation={new SlideAnimation({
-                        slideFrom: 'bottom',
-                    })}
+                    dialogAnimation={new ScaleAnimation({})}
                     actions={[
                         <DialogButton
                             text="sounds good"
-                            style={{ backgroundColor: "#33aadc" }}
-                            textStyle={{ color: "#FFF", alignSelf: "center", fontFamily: "Hiragino", fontSize: 18 }}
-                            onPress={() => { this.setState({ dialogVisible: false }) }}
+                            style={{ backgroundColor: "#FFF" }}
+                            textStyle={{ color: "black", alignSelf: "center", fontFamily: "Hiragino-Lightest", fontSize: 14 }}
+                            onPress={this.zoomOut}
                         />,
                     ]}
                     width={0.5}
                     height={0.15}
                 >
-                    <DialogContent style={{ flex: 1, backgroundColor: "#33aadc", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
-                        <Text style={{ color: "#FFF", fontFamily: "Hiragino", fontSize: 15 }}>{"No rollos nearby 😢"}</Text>
-                        <Text style={{ color: "#FFF", fontFamily: "Hiragino", fontSize: 15 }}>{"Try again later!"}</Text>
+                    <DialogContent style={{ flex: 1, backgroundColor: "#FFF", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
+                        <Text style={{ color: "black", fontFamily: "Hiragino-Lighter", fontSize: 16 }}>{"No rollos nearby 😢"}</Text>
+                        <Text style={{ color: "black", fontFamily: "Hiragino-Lighter", fontSize: 16 }}>{"Try again later!"}</Text>
                     </DialogContent>
                 </Dialog>
 

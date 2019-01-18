@@ -9,7 +9,7 @@ export default class UserInfoScreen extends Component {
     }
 
     render() {
-        const { signingIn, photoPickDisabled, pickImage, uploading, image, onChangeText, signUserIn, token, text, phoneNumber, dialogVisible, dismissDialog } = this.props
+        const { signingIn, photoPickDisabled, pickImage, uploading, image, onChangeText, signUserIn, token, text, phoneNumber } = this.props
         return (
             <TouchableWithoutFeedback
                 onPress={() => Keyboard.dismiss()}>

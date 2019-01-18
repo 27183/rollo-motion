@@ -426,13 +426,28 @@ exports.cancelRollo = functions.https.onRequest((req, res) => {
     //remove user's rolloID from rollo
 })
 
-exports.restoreUserState = functions.https.onRequest((req, res) => {
-    const { id } = req.body.data
+exports.retrieveUserHistory = functions.https.onRequest((req, res) => {
+    const { userId } = req.body.data
+    console.log("here's the userId", userId)
+
+
+    const sendError = error => {
+        res.status(422).send(error);
+    }
+
+
     return admin
         .firestore()
-        .collection("users")
-        .doc(id)
+        .collection("rides")
+        .doc(userId)
         .get()
-        .then(userInfo => console.log(userInfo))
+        .then((doc) => {
+            if (!doc.exists) {
+                console.log("no such document")
+            } else {
+                res.status(200).send({ data: doc.data() })
+            }
+        })
+        .catch(sendError)
 })
 
